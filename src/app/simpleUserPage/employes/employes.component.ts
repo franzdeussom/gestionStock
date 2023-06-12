@@ -267,18 +267,25 @@ checkNewEmployeData(): boolean{
       this.newUser.email = data.mail;
       this.newUser.tel = data.tel;
       this.newUser.role = data.role;
-      this.newUser.cni = data.CNI;
+      this.newUser.cni = data.cni;
       this.newUser.generatedBy = this.checkUserSvr.currentUserData.nom + '' + this.checkUserSvr.currentUserData.prenom;
       this.newUser.endValidity = this.checkUserSvr.currentUserData.endValidity;
   }
 
   generateUser(){
+
       if(this.newGenerate.valid){
           this.newUser.mdp = this.checkUserSvr.generatePassword();
           this.employeSrv.doRegister(this.newUser);
+          let tmp = new SystemUser();
+          Object.assign(tmp, this.newUser);
+          this.newGenerate.reset();
+          Object.assign(this.newUser, tmp);
+
       }else{
         this.employeSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
       }
+      
       this.employeSrv.close();
   }
 

@@ -122,6 +122,8 @@ export class DirectorPerteComponent {
     if(this.isArticle){
         if(this.isArticleDataSet()){
            this.gestionChargeSrv.createCharge(this.perte);
+           this.formControlOnIdSet.reset();
+
         }else{
              this.gestionChargeSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
         }
@@ -129,6 +131,7 @@ export class DirectorPerteComponent {
       if(this.isDataRequiredSet()){
 
         this.gestionChargeSrv.createCharge(this.perte);
+        this.mainFormControl.reset();
         
       }else{
          this.gestionChargeSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
@@ -138,6 +141,8 @@ export class DirectorPerteComponent {
   }
 
   setMainData(){
+    this.perte.idArticle = null;
+    this.perte.qte = null; 
     this.perte.motif = this.mainFormControl.get('motif')?.value;
     this.perte.prix  = this.mainFormControl.get('price')?.value;
     this.perte.dates  = this.mainFormControl.get('date')?.value;

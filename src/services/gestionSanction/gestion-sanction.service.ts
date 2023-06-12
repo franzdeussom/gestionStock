@@ -32,16 +32,24 @@ export class GestionSanctionService {
   }
 
   delete(id: number, index: number){
+    console.log('vor list',this.listSanction);
+
     const requestBody = { id : id };
     this.api.post(Endpoint.DELETE_SANCTION, requestBody).subscribe((resp)=>{
           if(Object.keys(resp).length > 0){
               this.activeAlertSucess(AlertMessage.DELETE_SUCCESS);
-              this.listSanction.splice(0, index);
+              this.deleteOnMainList(index);
           }
     }, (err)=>{
       console.log(err);
       this.activeAlertError(AlertMessage.ERROR);
     })
+  }
+
+  deleteOnMainList(id: number){
+      const index = this.listSanction.findIndex((sanction)=> sanction.id == id);
+
+      this.listSanction.splice(index, 1);
   }
 
   getAllSanction(){

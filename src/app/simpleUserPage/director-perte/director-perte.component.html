@@ -111,8 +111,8 @@
 
             <div style="margin-top: 10px; margin-bottom: 5px">
                 
-              <div class="card" *ngFor="let perte of gestionChargeSrv.listCharge">
-                <div class="card-header">
+              <div class="card" *ngFor="let perte of gestionChargeSrv.listCharge" style="margin-top: 10px; margin-bottom: 5px">
+                <div class="card-header text-bg-dark mb-3">
                         <span *ngIf="(perte.idArticle | typeof) !== 'undefined'" > Perte sur : Article </span>
                         <span *ngIf="(perte.idArticle | typeof) === 'undefined'" > Perte sur autre divers... </span>
                 </div>

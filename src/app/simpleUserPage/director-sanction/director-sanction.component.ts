@@ -89,14 +89,17 @@ export class DirectorSanctionComponent {
 
   setName(){
       let nom = this.sanctionFormControl.get('nom')?.value;
-      const index = this.listEmploye.findIndex((emp)=> (emp.nom + '' + emp.prenom) == nom);
+      const index = this.listEmploye.findIndex((emp)=> (emp.nom + '' + emp.prenom) === nom);
       if(index != -1){
           if(typeof this.listEmploye[index].idUser !== 'undefined'){
             this.newSanction.idUser = this.listEmploye[index].idUser;
+            this.newSanction.role = this.listEmploye[index].role;
             this.newSanction.id_employe = null;
           }else{
             this.newSanction.id_employe = this.listEmploye[index].id_employe;
             this.newSanction.idUser = null;
+            this.newSanction.poste = this.listEmploye[index].poste;
+
           }
           this.newSanction.nom = this.listEmploye[index].nom;
           this.newSanction.prenom = this.listEmploye[index].prenom;
@@ -125,7 +128,8 @@ export class DirectorSanctionComponent {
   }
 
   delSanction(id: number, index: number){
-      console.log('index id', this.sanctionSrv.listSanction[index].id);
+    this.sanctionSrv.delete(id, index);
+    this.sanctionSrv.close();
   }
 
   isAllDataSet(): boolean{

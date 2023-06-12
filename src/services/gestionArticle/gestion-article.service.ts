@@ -203,6 +203,7 @@ export class GestionArticleService {
   async updateOnMainList(article: Article){
     const index = this.listArticle.findIndex((artcl => artcl.idArticle == article.idArticle));
     if(index != -1){
+      article.qteCourrante = article.qteCourrante + this.listArticle[index].qteCourrante;
       Object.assign(this.listArticle[index], article);
       this.analyseStock();
     }
