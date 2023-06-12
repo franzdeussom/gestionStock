@@ -133,7 +133,7 @@
                                     
                                     <form [formGroup]="newUpdateFromControl">
                                         <div class="form-group">
-                                                <label for="qteCourrante">Nouvelle quantité:</label>
+                                                <label for="qteCourrante">Quantité à ajouter:</label>
                                                 <input type="number" formControlName="qty" required class="form-control" [(ngModel)]="newArticle.qteCourrante" id="qteCourrante" name="qteCourrante">
                                         </div>
                                         <div class="alert alert-danger" *ngIf="newUpdateFromControl.controls['qty'].invalid && (newUpdateFromControl.controls['qty'].dirty || newUpdateFromControl.controls['qty'].touched)" >

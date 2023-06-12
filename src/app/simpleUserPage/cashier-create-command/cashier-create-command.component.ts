@@ -134,10 +134,17 @@ export class CashierCreateCommandComponent implements OnInit{
         this.articleSrv.close();
         this.formCommandControl.controls['quantite'].setValue(undefined);
 
+      }else if(this.listFilterByType[index].qteCourrante == 0){
+        this.articleSrv.activeAlertError('Cette article est epuise dans le stock');
+        this.articleSrv.close();
+        this.formCommandControl.controls['quantite'].setValue(undefined);
       }else{
+        if(qtyRequested >=0){
           this.newVente.nomArticle = this.listFilterByType[index].nomArticle;
           this.newVente.qteVendue = qtyRequested;
           this.getTotalPrice();
+        }
+          
       }
     }
   }
@@ -148,14 +155,19 @@ export class CashierCreateCommandComponent implements OnInit{
 
       if(typeof qty === 'undefined' || typeof qty == null){
         this.articleSrv.activeAlertError('Veuillez entrer la quantite !');
-        this.articleSrv.close();
       }else{
         if(typeof prixVente !== 'undefined' || typeof prixVente != null){
-          this.newVente.totalAPayer = qty * prixVente; 
-          this.newVente.prixVente = prixVente;
+          if(qty >= 0){
+            this.newVente.totalAPayer = qty * prixVente; 
+            this.newVente.prixVente = prixVente;
+          }else{
+              this.articleSrv.activeAlertError('Veuillez une quantite supperieur à 0 !');
+          }
+          
         }   
       }
 
+      this.articleSrv.close();
 }
 
   initCommand(){      
@@ -181,7 +193,7 @@ export class CashierCreateCommandComponent implements OnInit{
       this.newVente.marge = this.newVente.totalAPayer - (this.newVente.qteVendue * this.listFilterByType[this.indexArticle].prixUnitaire); 
     }
     const isPriceVenteCorrect = ()=>{
-      return this.newVente.prixVente >= this.listFilterByType[this.indexArticle].prixUnitaire;
+      return this.newVente.prixVente >= this.listFilterByType[this.indexArticle].prixUnitaire && this.newVente.prixVente >= 0;
     }
       if(this.isEntryValid()){
           if(isPriceVenteCorrect()){
@@ -233,16 +245,26 @@ checkUser(){
       this.indexArticleEmprunt = index;
       if(qtyRequested > this.listFilterByType[index].qteCourrante){
         this.articleSrv.activeAlertError('La quantite demande nest pas encore disponible pour ce produit');
-        this.articleSrv.close();
         this.formEmpruntControl.controls['quantite'].setValue(undefined);
 
+      }else if(this.listFilterByType[index].qteCourrante == 0){
+        this.articleSrv.activeAlertError('Cette article est epuise en stock');
+        this.articleSrv.close();
+        this.formCommandControl.controls['quantite'].setValue(undefined);
+      
       }else{
+        if(qtyRequested >= 0){
           this.newEmprunt.nomArticle = this.listFilterByType[index].nomArticle;
           this.newEmprunt.idRefArticle = this.listFilterByType[index].idRefType;
           this.newEmprunt.qte = qtyRequested;
           this.getTotalPriceEmprunt();
+        }else{
+              this.articleSrv.activeAlertError('Veuillez entrer une quantite supperieur à 0!');
+          }
+         
       }
-    }
+      this.articleSrv.close();
+    }    
   }
 
  async getTotalPriceEmprunt(){
@@ -251,22 +273,29 @@ checkUser(){
 
       if(typeof qty === 'undefined' || typeof qty == null){
         this.articleSrv.activeAlertError('Veuillez entrer la quantite !');
-        this.articleSrv.close();
       }else{
         if(typeof prixVente !== 'undefined' || typeof prixVente != null){
-          this.newEmprunt.netAPayer = qty * prixVente; 
-          this.newEmprunt.prixVente = prixVente;
+          if(qty >= 0 ){
+            this.newEmprunt.netAPayer = qty * prixVente; 
+            this.newEmprunt.prixVente = prixVente;
+          }else{
+              this.articleSrv.activeAlertError('Veuillez entrer une quantite supperieur à 0!');
+          }
+          
         }   
       }
+      this.articleSrv.close();
+
 }
 
   saveEmprunt(){
     const isPriceVenteCorrect = ()=>{
-      return this.newEmprunt.prixVente >= this.listFilterByType[this.indexArticleEmprunt].prixUnitaire;
+      return this.newEmprunt.prixVente >= this.listFilterByType[this.indexArticleEmprunt].prixUnitaire && this.newVente.prixVente >= 0;
     }
       if(this.isEntryEmpruntValid()){
         if(isPriceVenteCorrect()){
           this.newEmprunt.statut = StatusEmprunt.NON_REGLE;
+          console.log(this.newEmprunt);
           this.articleSrv.doEmprunt(this.newEmprunt);
           this.getListFilterByTypeEmprunt();
           this.formEmpruntControl.reset();

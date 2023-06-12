@@ -61,7 +61,6 @@ export class StockComponent {
   onFormChange(){
     this.newArticleFormControl.valueChanges.subscribe(
       data => {
-        console.log(data);
         this.setParamArticle(data);
       }
     )
@@ -117,10 +116,15 @@ export class StockComponent {
         this.newArticle.nomType = data.nomType;
         this.newArticle.nomArticle = data.name;
         this.indexType = index;
-        console.log('article change', this.newArticle);
       }
+      if(this.newArticle.qteCourrante > 0){
+         this.defineTotalArticlePrice();
+      }else{
+        this.gestionArticleSrv.activeAlertError("Veuillez entrer une quantite supperieur à 0");
+        this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
 
-      this.defineTotalArticlePrice();
+      }
+      this.gestionArticleSrv.close();
   }
 
   defineTotalArticlePrice(){
@@ -154,11 +158,18 @@ export class StockComponent {
       if(this.newUpdateFromControl.valid){
         const newQty = this.newUpdateFromControl.get('qty')?.value;
         if(newQty > this.oldQty){
-          this.tmpArticleToUpdate.qteCourrante = newQty;
-          this.defineTotalPriceNewQty(this.tmpArticleToUpdate.idArticle);
-          this.gestionArticleSrv.updateQty(this.tmpArticleToUpdate);
-        }else{
-         this.gestionArticleSrv.activeAlertError("Vous ne posseder de droit de diminuer le stock");
+          if(newQty >= 0){
+            this.tmpArticleToUpdate.qteCourrante = newQty;
+            this.defineTotalPriceNewQty(this.tmpArticleToUpdate.idArticle);
+            this.gestionArticleSrv.updateQty(this.tmpArticleToUpdate);  
+          }else{
+            this.gestionArticleSrv.activeAlertError("Veuillez entrer une quantite supperieur à 0");
+            this.newUpdateFromControl.controls['qty'].setValue(undefined);
+          }
+          }else{
+            this.gestionArticleSrv.activeAlertError("Vous ne posseder de droit de diminuer le stock");
+            this.newUpdateFromControl.controls['qty'].setValue(undefined);
+
         }
 
       }else{

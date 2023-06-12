@@ -19,6 +19,7 @@ export class GestionChargeService {
   constructor( private api: ApiSystemeService, private articleSrv: GestionArticleService) { }
 
   createCharge(charge: Charge){
+    console.log(JSON.stringify(charge));
       this.api.post(Endpoint.CREATE_CHARGE, charge).subscribe((resp)=>{
           
           if(Object.keys(resp).length > 0){
@@ -32,6 +33,7 @@ export class GestionChargeService {
 
   isQtyAvailable(charge : Charge): boolean{
       let resp: boolean = false;
+      console.log('charge', charge);
       const index = this.articleSrv.listArticle.findIndex((value)=> value.idArticle == charge.idArticle && value.idRefType == charge.idRefArticle);
       if(index != -1){
           if(this.articleSrv.listArticle[index].qteCourrante < charge.qte){
@@ -41,6 +43,8 @@ export class GestionChargeService {
               resp = true;
           }
       }
+      console.log('index :', index);
+      console.log('res', resp);
       return resp;
   }
 

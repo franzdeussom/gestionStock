@@ -23,7 +23,7 @@ export class DirectorPerteComponent {
   mainFormControl!: FormGroup;
 
   isArticle: boolean = false;
-
+  indexArticle: number = 0;
   constructor(
             public typeArticleSrv: GestionTypeArticleService,
             public articleSrv: GestionArticleService,
@@ -81,10 +81,11 @@ export class DirectorPerteComponent {
         this.tabPerte.nativeElement.classList.remove('active');
         this.tabList.nativeElement.classList.add('active');
         this.isTabListOpen = true;
+        this.isArticle = false;
       }
   }
 
-  switchToArticle(){
+  async switchToArticle(){
       if(!this.isArticle){
         this.renitMainData();
         this.isArticle = true;
@@ -104,9 +105,22 @@ export class DirectorPerteComponent {
       if(typeof this.perte.idArticle !== 'undefined'){
           const index = this.articleSrv.listArticle.findIndex((article)=> article.idArticle == this.perte.idArticle);
           if(index != -1){
-            this.perte.prix = this.articleSrv.listArticle[index].prixUnitaire * this.perte.qte;
-            this.formControlOnIdSet.controls['price'].setValue(this.perte.prix);
+            this.indexArticle = index;
+            if(this.articleSrv.listArticle[index].qteCourrante > 0 && this.articleSrv.listArticle[index].qteCourrante >= this.perte.qte){
+              if(this.perte.qte >= 0){
+                this.perte.prix = this.articleSrv.listArticle[index].prixUnitaire * this.perte.qte;
+                this.formControlOnIdSet.controls['price'].setValue(this.perte.prix);    
+              }else{
+                this.gestionChargeSrv.activeAlertError('Veuillez entrer un nombre supperieur à 0!'); 
+                this.formControlOnIdSet.controls['qte'].setValue(undefined);
+              }
+            }else{
+                this.gestionChargeSrv.activeAlertError('il se pourrait que la quantite presente dans votre stock soit inférieur que votre demande !');
+                this.formControlOnIdSet.controls['qte'].setValue(undefined);
+            }
           }
+
+          this.gestionChargeSrv.close();
       }
   }
 
@@ -121,6 +135,7 @@ export class DirectorPerteComponent {
   savePerte(){
     if(this.isArticle){
         if(this.isArticleDataSet()){
+          console.log(this.perte);
            this.gestionChargeSrv.createCharge(this.perte);
            this.formControlOnIdSet.reset();
 
@@ -129,7 +144,7 @@ export class DirectorPerteComponent {
         }
     }else{
       if(this.isDataRequiredSet()){
-
+        console.log(this.perte);
         this.gestionChargeSrv.createCharge(this.perte);
         this.mainFormControl.reset();
         
@@ -140,7 +155,7 @@ export class DirectorPerteComponent {
     this.gestionChargeSrv.close();
   }
 
-  setMainData(){
+  async setMainData(){
     this.perte.idArticle = null;
     this.perte.qte = null; 
     this.perte.motif = this.mainFormControl.get('motif')?.value;
@@ -148,7 +163,7 @@ export class DirectorPerteComponent {
     this.perte.dates  = this.mainFormControl.get('date')?.value;
   }
 
-  setArticleData(){
+  async setArticleData(){
       this.perte.idArticle = Number.parseInt(this.formControlOnIdSet.get('idArticle')?.value);
       this.perte.prix = this.formControlOnIdSet.get('price')?.value;
       this.perte.qte = this.formControlOnIdSet.get('qte')?.value;
