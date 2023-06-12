@@ -1,0 +1,19 @@
+<div *ngIf="isAuthentificated">
+
+    <app-side-bar-menu  [isExpanded]="sidebarExpanded" (toggleSidebar)="sidebarExpanded = !sidebarExpanded"></app-side-bar-menu>
+    
+    <div class="content" [ngClass]="{ 'sidebarExpanded': sidebarExpanded }">
+        <app-nav-bar-menu></app-nav-bar-menu>
+
+    </div>
+</div>
+
+<router-outlet></router-outlet>  
+
+
+
+
+
+
+
+

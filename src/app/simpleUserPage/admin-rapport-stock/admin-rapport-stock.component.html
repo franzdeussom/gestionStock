@@ -1,0 +1,88 @@
+<div class="contener">
+    <div class="home-content">
+        <div>
+
+            <div class="input-group" style="text-align: center; margin-top: 10px;">
+                <div class="form-outline" style="width: 95%;">
+                  <input type="search" id="form1" (keyup)="doSearchArticle()" [(ngModel)]="searchValue" class="form-control" placeholder="rechercher un article, type ou nom"/>
+                </div>
+                <button type="button" class="btn btn-primary" disabled>
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+              
+              <div style="margin-top: 10px; margin-bottom: 5px;" class="d-flex flex-row">
+                   <span  class="badge bg-info text-dark"> {{ gestionArticleSrv.nbrToTalDarticle }} PRODUITS TOTAL EN STOCK</span>
+                   <span  class="badge bg-info text-dark">COUT GLOBAL DU STOCK ACTUEL => {{ gestionArticleSrv.coutTotalStock }} FCFA </span>  
+              </div>
+              <button style="float:right; right:0; top: 0;" class="btn btn-outline-dark" (click)="refresh()">
+                Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+              </button>
+
+
+              <div class="text-center" *ngIf="gestionArticleSrv.listArticle.length == 0" >
+                <div class="spinner-border text-primary" role="status">
+                  <span>Chargement...</span>
+                </div>
+              </div>
+
+                <div *ngIf="searchValue.length > 0" style="margin-top: 10px;">
+                    <table class="table table-striped table-dark">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Prix Unitaire</th>  
+                            <th scope="col">Qte en Stock </th> 
+                            <th scope="col">Qte Critique</th>
+                            <th scope="col">Montant d'approvisionement </th> 
+                            <th scope="col">Date Creation</th>
+                        </tr>
+                        </thead>
+                        <tbody *ngFor="let article of listSearch; let index=index">
+                        <tr>
+                            <td scope="row"> {{ index+1 }} </td>
+                            <td scope="row">{{ article.nomArticle }}</td>
+                            <td scope="row"> {{ article.nomType }} </td>
+                            <td scope="row"> {{ article.prixUnitaire }} </td>
+                            <td scope="row">{{ article.qteCourrante }}</td>
+                            <td scope="row"> {{ article.qteCritique }} </td>
+                            <td scope="row" style="color:yellowgreen"> {{ article.coutTotal }} FCFA </td>
+                            <td scope="row"> {{ article.dateCreation }} </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="searchValue.length === 0" style="margin-top: 10px;">
+                    <table class="table table-striped table-dark">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Prix Unitaire</th>  
+                                <th scope="col">Qte en Stock </th>
+                                <th scope="col">Qte Critique</th>
+                                <th scope="col">Montant d'approvisionement </th> 
+                                <th scope="col">Date Creation</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let article of gestionArticleSrv.listArticle; let index=index">
+                            <tr>
+                                <td scope="row"> {{ index+1 }} </td>
+                                <td scope="row">{{ article.nomArticle }}</td>
+                                <td scope="row"> {{ article.nomType }} </td>
+                                <td scope="row"> {{ article.prixUnitaire }} FCFA </td>
+                                <td scope="row">{{ article.qteCourrante }}</td>
+                                <td scope="row"> {{ article.qteCritique }} </td>
+                                <td scope="row" style="color:yellowgreen"> {{ article.coutTotal }} FCFA </td>
+                                <td scope="row"> {{ article.dateCreation }} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+    </div>
+</div>

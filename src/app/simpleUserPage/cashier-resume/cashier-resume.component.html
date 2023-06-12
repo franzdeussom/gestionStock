@@ -1,0 +1,167 @@
+<div class="contener">
+    <div class="home-content">
+        <div class="head">
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="switchTab()">
+                     <a class="nav-link active" #allVenteDay>Resume Vente du Jour</a>
+                </li>
+                <li class="nav-item" (click)="switchTab()">
+                     <a class="nav-link " #allEmprunt>Tous les Emprunts</a>
+                </li>
+            </ul>
+        </div>
+
+        <div *ngIf="gestionArticleSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ gestionArticleSrv.alert.successMessage }} </span>
+            <button type="button" (click)="gestionArticleSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="gestionArticleSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+            <span> {{ gestionArticleSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="gestionArticleSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+
+        <div *ngIf="isAllVenteTabActive; then showListVente else showListEmprunt"></div>
+
+        <ng-template #showListVente>
+            <h3> {{ listVenteDay.length }} </h3><span style="font-size: 15px;"> Articles vendues Aujourd'hui </span>   
+
+                <div *ngFor="let vente of listVenteDay" style="margin-top: 10px; margin-bottom: 5px;">
+                        <div class="card">
+                            <div class="card-header">
+                                    <span> Vente de : <strong> {{ vente.nomArticle }} </strong> </span>
+                            </div>
+
+                            <div class="card-body">
+                                    <!--<span class="card-text">Quantité : {{ vente.qteVendue }} </span><br>
+                                    
+                                    <span class="card-text">prix de vente : {{ vente.totalAPayer }} </span><br>
+                                    -->
+                                    <span class="card-text"> date de vente : Aujourd'hui à {{ vente.heure }} </span>
+                            </div>
+
+                            <div class="card-footer">
+                                    <h5>Montant perçu : <em><strong> {{vente.totalAPayer}} FCFA </strong> </em></h5>
+                            </div>
+                        </div>
+                </div> 
+        </ng-template>
+
+        <ng-template #showListEmprunt>
+            <div class="input-group" style="text-align: center; margin-top: 10px;">
+                <div class="form-outline" style="width: 95%;">
+                  <input type="search" id="form1" (keyup)="doSearch()" [(ngModel)]="searchValue" class="form-control" placeholder="rechercher un employe (nom)..."/>
+                </div>
+                <button type="button" class="btn btn-primary" disabled>
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+
+              <button style="float:right; right: 0;" class="btn btn-outline-dark" (click)="refresh()">
+                Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+              </button>
+
+              <div class="text-center" *ngIf="gestionArticleSrv.listEmprunt.length == 0" >
+                <div class="spinner-border text-primary" role="status">
+                  <span>Chargement...</span>
+                </div>
+              </div>
+              
+              <div *ngIf="searchValue.length == 0" style="margin-top: 10px;">
+                <div *ngFor="let emprunt of gestionArticleSrv.listEmprunt">
+                    <div class="card" style="margin-top: 10px; margin-bottom: 5px;">
+                            <div class="card-header">
+                                <span>Emprunt de Mme/Mr : <strong> {{ emprunt.nom }} {{ emprunt.prenom }} </strong>  </span>
+                            </div>
+
+                            <div class="card-body">
+                                <table class="table table-striped table-dark">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">Nom Article</th>
+                                            <th scope="col">type</th>
+                                            <th scope="col">Qte</th>
+                                            <th scope="col">Prix d'emprunt</th>
+                                            <th scope="col">date d'emprunt</th>
+                                            <th scope="col">Net à payer</th>
+                                            <th scope="col">Statut</th>
+                                            <th scope="col"> . . . </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td scope="row"> {{ emprunt.nomArticle }} </td>
+                                            <td scope="row"> {{ emprunt.nomType }} </td>
+                                            <td scope="row"> {{ emprunt.qte }} </td>
+                                            <td scope="row"> {{ emprunt.prixVente }} </td>
+                                            <td scope="row"> {{ emprunt.date }} </td>
+                                            <td scope="row"> {{ emprunt.netAPayer }} </td>
+                                            <td scope="row"> {{ emprunt.statut }} </td>
+                                            <td scope="row"> 
+                                                    <div *ngIf="emprunt.statut === statut.NON_REGLE" > 
+                                                        <button class="btn btn-primary" (click)="updateStatutEmprunt(emprunt)">Definir Comme Réglé</button>
+                                                    </div> 
+                                                    <div *ngIf="emprunt.statut === statut.REGLE">
+                                                        <button class="btn btn-danger" disabled>Supprimer</button>
+                                                    </div>   
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                     </div>
+                </div>
+              </div>
+
+              <div *ngIf="searchValue.length > 0" style="margin-top: 10px;">
+                <div *ngFor="let emprunt of listSearchRslt">
+                    <div class="card" style="margin-top: 10px; margin-bottom: 5px;">
+                            <div class="card-header">
+                                <span>Emprunt de Mme/Mr : <strong> {{ emprunt.nom }} {{ emprunt.prenom }} </strong> </span>
+                            </div>
+
+                            <div class="card-body">
+                                <table class="table table-striped table-dark">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">Nom Article</th>
+                                            <th scope="col">type</th>
+                                            <th scope="col">Qte</th>
+                                            <th scope="col">Prix d'emprunt</th>
+                                            <th scope="col">date d'emprunt</th>
+                                            <th scope="col">Net à payer</th>
+                                            <th scope="col">Statut</th>
+                                            <th scope="col"> . . . </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td scope="row"> {{ emprunt.nomArticle }} </td>
+                                            <td scope="row"> {{ emprunt.nomType }} </td>
+                                            <td scope="row"> {{ emprunt.qte }} </td>
+                                            <td scope="row"> {{ emprunt.prixVente }} </td>
+                                            <td scope="row"> {{ emprunt.date }} </td>
+                                            <td scope="row"> {{ emprunt.netAPayer }} </td>
+                                            <td scope="row"> {{ emprunt.statut }} </td>
+                                            <td scope="row"> 
+                                                    <div *ngIf="emprunt.statut === statut.NON_REGLE" > 
+                                                        <button class="btn btn-primary" (click)="updateStatutEmprunt(emprunt)">Definir Comme Réglé</button>
+                                                    </div> 
+                                                    <div *ngIf="emprunt.statut === statut.REGLE">
+                                                        <button class="btn btn-danger" disabled>Supprimer</button>
+                                                    </div>   
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                </div>
+              </div>
+                
+        </ng-template>
+    </div>
+</div>

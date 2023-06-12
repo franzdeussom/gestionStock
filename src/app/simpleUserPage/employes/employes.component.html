@@ -1,0 +1,612 @@
+<div class="contener">
+    <div class="home-content">
+
+        <div class="head">
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="changeToAllEmploye()">
+                     <a class="nav-link active" #allEmp>Tous les Employes</a>
+                </li>
+                <li class="nav-item" (click)="changeToAddEmp()">
+                     <a class="nav-link " #addEmp>Cree un nouveau employe</a>
+                </li>
+            </ul>
+        </div>
+
+        <div *ngIf="employeSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+          <span> {{ employeSrv.alert.successMessage }} </span>
+          <button type="button" (click)="employeSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div *ngIf="employeSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="fa fa-times-circle" aria-hidden="true"></i>
+          <span> {{ employeSrv.alert.errorMessage }} </span>
+          <button type="button" (click)="employeSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <button style="float:right; right: 0;" class="btn btn-outline-dark" (click)="refresh()">
+          Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+        </button>
+
+        <div class="text-center" *ngIf="employeSrv.listEmploye.length ==0 && employeSrv.listParticularEmploye.length == 0">
+          <div class="spinner-border text-primary" role="status">
+            <span>Chargement...</span>
+          </div>
+        </div>
+
+        <div class="content-all-employe" *ngIf="isAllEmpBarActive">
+            <div class="head">
+              <ul class="nav nav-tabs">
+                  <li class="nav-item" (click)="changeToEmploye()">
+                      <a class="nav-link active" #emp>Employes</a>
+                  </li>
+                  <li class="nav-item" (click)="changeToParticular()">
+                      <a class="nav-link " #particular>Employes Particuliers</a>
+                  </li>
+              </ul>
+          </div>
+
+          <div *ngIf="!isParticulart" style="margin-top: 10px;">
+                <div class="spinner-border text-primary" role="status" *ngIf="listEmploye.length === 0" >
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+
+                <div class="input-group" style="text-align: center; margin-top: 10px;">
+                  <div class="form-outline" style="width: 95%;">
+                    <input type="search" id="form1" (keyup)="doSearch()" [(ngModel)]="searchValue" class="form-control" placeholder="rechercher un employe (entrer nom)"/>
+                  </div>
+                  <button type="button" class="btn btn-primary" disabled>
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+
+                <div class="resultSearch" *ngIf="searchValue.length > 0" >
+                  <table class="table table-striped table-dark" style="margin-top: 15px;">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prenom</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Telephone</th>
+                        <th scope="col">Poste</th>
+                        <th scope="col">CNI</th>
+                        <th scope="col"></th>
+    
+                      </tr>
+                    </thead>
+                    <tbody *ngFor="let employe of listSearchReslt; let index=index" >
+                      <tr>
+                        <th scope="row"> {{ index+1 }} </th>
+                        <td>{{employe.nom}}</td>
+                        <td> {{ employe.prenom }} </td>
+                        <td>{{ employe.email }} </td>
+                        <td>{{ employe.tel }} </td>
+                        <td> 
+                            <div *ngIf="(employe.poste | typeof) !== 'undefined'; then poste else role"></div>
+                            <ng-template #poste>
+                                <span> {{ employe.poste }} </span>
+                            </ng-template>
+                            <ng-template #role>
+                                <span> {{ employe.role }} </span>
+                            </ng-template>  
+                        </td>
+                        <td>{{ employe.cni }} </td>
+                        <td style="float: right; width: 100%;" align="right">
+                           
+                            <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="openModal(mymodalSearch, employe)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                            <Button class="btn btn-primary" (click)="openModifyModal(mymodalModifSearch, employe)">Modifier <i class="fa fa-pencil" aria-hidden="true"></i></Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+
+                    <ng-template #mymodalSearch let-modal>
+                      <div class="modal-header">
+                        <h4 class="modal-title" id="modal-basic-title">Supprimer un Employe</h4>
+                        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                          <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                          <span> Voulez-vous vraiment supprimer l'employe {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }} ?</span>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" (click)="doDelete()">Supprimer</button>
+                        <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                      </div>
+                    </ng-template>
+
+                    <ng-template #mymodalModifSearch let-modal>
+                      <div class="modal-header">
+                        <h4 class="modal-title" id="modal-basic-title">Modifier {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }}</h4>
+                        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                          <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form style="margin-top: 0px; padding: 5px;" [formGroup]="newEmployeModifyControl">
+
+                          <div class="form-group">
+                            <label for="name">Nom</label>
+                            <input type="text" formControlName="name" required class="form-control" [(ngModel)]="tmpUserDataToModify.nom" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+                          </div>
+                          <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['name'].invalid && (newEmployeModifyControl.controls['name'].dirty || newEmployeModifyControl.controls['name'].touched)" >
+                            <div *ngIf="newEmployeModifyControl.controls['name'].errors" >
+                                <span>le Nom est Obligatoire !</span>
+                            </div>
+                          </div>
+            
+                          <div class="form-group">
+                            <label for="surname">Prenom</label>
+                            <input type="text"  formControlName="surname" class="form-control" [(ngModel)]="tmpUserDataToModify.prenom" id="surname" name="surname" aria-describedby="surname" placeholder="Entrer le prenom">
+                          </div>
+                          <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['surname'].invalid && (newEmployeModifyControl.controls['surname'].dirty || newEmployeModifyControl.controls['surname'].touched)" >
+                            <div *ngIf="newEmployeModifyControl.controls['surname'].errors" >
+                                <span>le Prenom est Obligatoire !</span>
+                            </div>
+                          </div>
+            
+                            <div class="form-group">
+                              <label for="exampleInputEmail1">Email address</label>
+                              <input type="email" formControlName="email" class="form-control" [(ngModel)]="tmpUserDataToModify.email" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" placeholder="Entrer l'email">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['email'].invalid && (newEmployeModifyControl.controls['email'].dirty || newEmployeModifyControl.controls['email'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['email'].errors" >
+                                  <span>l'email est Obligatoire !</span>
+                              </div>
+                            </div>
+            
+                            <div class="form-group">
+                              <label for="tel">Tel</label>
+                              <input type="number" formControlName="tel" class="form-control" [(ngModel)]="tmpUserDataToModify.tel" id="tel" name="tel" aria-describedby="tel" placeholder="Entre num Telephone">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['tel'].invalid && (newEmployeModifyControl.controls['tel'].dirty || newEmployeModifyControl.controls['tel'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['tel'].errors" >
+                                  <span>le numero de telephone est Obligatoire !</span>
+                              </div>
+                            </div>
+            
+                            <div class="form-group">
+                              <label for="tel">Poste</label>
+                              <input type="text" formControlName="poste" class="form-control" [(ngModel)]="tmpUserDataToModify.poste" id="poste" name="poste" aria-describedby="poste" placeholder="Entre le poste">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['poste'].invalid && (newEmployeModifyControl.controls['poste'].dirty || newEmployeModifyControl.controls['poste'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['poste'].errors" >
+                                  <span>le poste est Obligatoire !</span>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="cni">CNI</label>
+                              <input type="text" formControlName="CNI" class="form-control" id="cni" placeholder="CNI" [(ngModel)]="tmpUserDataToModify.cni" name="cni">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['CNI'].invalid && (newEmployeModifyControl.controls['CNI'].dirty || newEmployeModifyControl.controls['CNI'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['CNI'].errors" >
+                                  <span>l'Identifiant de a CNI est Obligatoire !</span>
+                              </div>
+                            </div>
+
+                          </form>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" (click)="doUpdateEmploye()">Terminer</button>
+                        <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                      </div>
+                    </ng-template>
+
+
+                    <div class="mainList" *ngIf="searchValue.length == 0" >
+                      <table class="table table-striped table-dark" style="margin-top: 15px;">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Prenom</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col">Poste</th>
+                            <th scope="col">CNI</th>
+                            <th scope="col"></th>
+
+                          </tr>
+                        </thead>
+                        <tbody *ngFor="let employe of listEmploye; let index=index" >
+                          <tr>
+                            <th scope="row"> {{ index+1 }} </th>
+                            <td>{{employe.nom}}</td>
+                            <td> {{ employe.prenom }} </td>
+                            <td>{{ employe.email }} </td>
+                            <td>{{ employe.tel }} </td>
+                            <td> 
+                              <div *ngIf="(employe.poste | typeof) !== 'undefined'; then poste else role"></div>
+                              <ng-template #poste>
+                                  <span> {{ employe.poste }} </span>
+                              </ng-template>
+                              <ng-template #role>
+                                  <span> {{ employe.role }} </span>
+                              </ng-template>  
+                            </td>
+                            <td>{{ employe.cni }} </td>
+                            <td style="float: right; width: 100%;" align="right">
+                              
+                                <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="openModal(mymodal, employe)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                                <Button class="btn btn-primary" (click)="openModifyModal(mymodalModif, employe)">Modifier <i class="fa fa-pencil" aria-hidden="true"></i></Button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <ng-template #mymodal let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">Supprimer un Employe</h4>
+                          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                            <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                            <span> Voulez-vous vraiment supprimer l'employe {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }} ?</span>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" (click)="doDelete()">Supprimer</button>
+                          <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                        </div>
+                      </ng-template>
+
+                      <ng-template #mymodalModif let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">Modifier {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }}</h4>
+                          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                            <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form style="margin-top: 0px; padding: 5px;" [formGroup]="newEmployeModifyControl">
+
+                            <div class="form-group">
+                              <label for="name">Nom</label>
+                              <input type="text" formControlName="name" class="form-control" [(ngModel)]="tmpUserDataToModify.nom" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['name'].invalid && (newEmployeModifyControl.controls['name'].dirty || newEmployeModifyControl.controls['name'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['name'].errors" >
+                                  <span>le Nom est Obligatoire !</span>
+                              </div>
+                            </div>
+              
+                            <div class="form-group">
+                              <label for="surname">Prenom</label>
+                              <input type="text" formControlName="surname" class="form-control" [(ngModel)]="tmpUserDataToModify.prenom" id="surname" name="surname" aria-describedby="surname" placeholder="Entrer le prenom">
+                            </div>
+                            <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['surname'].invalid && (newEmployeModifyControl.controls['surname'].dirty || newEmployeModifyControl.controls['surname'].touched)" >
+                              <div *ngIf="newEmployeModifyControl.controls['surname'].errors" >
+                                  <span>le Prenom est Obligatoire !</span>
+                              </div>
+                            </div>
+              
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" formControlName="email" class="form-control" [(ngModel)]="tmpUserDataToModify.email" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" placeholder="Entrer l'email">
+                              </div>
+                              <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['email'].invalid && (newEmployeModifyControl.controls['email'].dirty || newEmployeModifyControl.controls['email'].touched)" >
+                                <div *ngIf="newEmployeModifyControl.controls['email'].errors" >
+                                    <span>l'email est Obligatoire !</span>
+                                </div>
+                              </div>
+              
+                              <div class="form-group">
+                                <label for="tel">Telephone</label>
+                                <input type="number" formControlName="tel" class="form-control" [(ngModel)]="tmpUserDataToModify.tel" id="tel" name="tel" aria-describedby="tel" placeholder="Entrez le num Telephone">
+                              </div>
+                              <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['tel'].invalid && (newEmployeModifyControl.controls['tel'].dirty || newEmployeModifyControl.controls['tel'].touched)" >
+                                <div *ngIf="newEmployeModifyControl.controls['tel'].errors" >
+                                    <span>le numero de telephone est Obligatoire !</span>
+                                </div>
+                              </div>
+              
+                              <div class="form-group">
+                                <label for="tel">Poste</label>
+                                <input type="text" formControlName="poste" class="form-control" [(ngModel)]="tmpUserDataToModify.poste" id="poste" name="poste" aria-describedby="poste" placeholder="Entrez le poste">
+                              </div>
+                              <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['poste'].invalid && (newEmployeModifyControl.controls['poste'].dirty || newEmployeModifyControl.controls['poste'].touched)" >
+                                <div *ngIf="newEmployeModifyControl.controls['poste'].errors" >
+                                    <span>le poste est Obligatoire !</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="cni">CNI</label>
+                                <input type="text" formControlName="CNI" class="form-control" id="cni" placeholder="CNI" [(ngModel)]="tmpUserDataToModify.cni" name="cni">
+                              </div>
+                              <div class="alert alert-danger" *ngIf="newEmployeModifyControl.controls['CNI'].invalid && (newEmployeModifyControl.controls['CNI'].dirty || newEmployeModifyControl.controls['CNI'].touched)" >
+                                <div *ngIf="newEmployeModifyControl.controls['CNI'].errors" >
+                                    <span>l'Identifiant de a CNI est Obligatoire !</span>
+                                </div>
+                              </div>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" (click)="doUpdateEmploye()">Terminer</button>
+                          <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                        </div>
+                      </ng-template>
+                    
+                </div>
+
+                <div *ngIf="isParticulart" style="margin-top: 10px;">
+                    <div class="btn btn-dark"  style="float: right; top: 0; right: 0; z-index: 1;" (click)="doOpenPModal(mymodalParticular)">
+                      Generer un particulier <i class="fa fa-refresh" aria-hidden="true"></i>
+                    </div>
+                    
+                      <div class="input-group" style="text-align: center; margin-top: 10px;">
+                        <div class="form-outline" style="width: 95%;">
+                          <input type="search" id="form1" (keyup)="doParticularSearch()" [(ngModel)]="valueSearch" class="form-control" placeholder="rechercher un employe (entrer nom)"/>
+                        </div>
+                        <button type="button" class="btn btn-primary" disabled>
+                          <i class="fa fa-search"></i>
+                        </button>
+                      </div>
+
+
+                      <ng-template #mymodalParticular let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">Nouveau utilisateur/Employe</h4>
+                          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                            <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+
+                          <div *ngIf="employeSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                            <span> {{ employeSrv.alert.successMessage }} </span>
+                            <button type="button" (click)="employeSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                  
+                          <div *ngIf="employeSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa fa-times-circle" aria-hidden="true"></i>
+                            <span> {{ employeSrv.alert.errorMessage }} </span>
+                            <button type="button" (click)="employeSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                                  <div class="d-flex flex-column align-items-center text-center">
+                                    <img src="../../../assets/avatar.png" alt="Admin" class="rounded-circle" width="150">
+                                      
+                                      <div class="mt-3" *ngIf="employeSrv.isGenrateUserComplte">
+                                        <h4>{{ newUser.nom }} {{ newUser.prenom }} </h4>
+                                        <p class="text-secondary mb-1">{{ newUser.role }}</p>
+                                        <p class="text-muted font-size-sm"> {{ newUser.email }}  </p>
+
+                                        <p class="text-secondary mb-1">Mot de passe : <span style="color:red;"> {{ newUser.mdp }} </span> </p>
+                                      </div>
+                                </div>
+                                <form [formGroup]="newGenerate">
+                                  <div class="form-group">
+                                    <label for="name">Nom</label>
+                                    <input type="text" required class="form-control" formControlName="name" [(ngModel)]="newEmploye.nom" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="surname">Prenom</label>
+                                    <input type="text" required class="form-control" formControlName="surname" id="surname" aria-describedby="surname" name="surname" placeholder="Entrer le prenom">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="tel"> Tel  </label>
+                                    <input type="text" required class="form-control" formControlName="tel" id="tel" aria-describedby="tel" name="tel" placeholder="Entrer le numero de telephone">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="CNI">CNI </label>
+                                    <input type="text" required class="form-control" formControlName="cni" id="cni" aria-describedby="cni" name="cni" placeholder="Entrer la CNI">
+                                  </div>
+                                  
+
+                                  <div class="form-group">
+                                    <label for="mail">Adresse mail</label>
+                                    <input type="text"  class="form-control" formControlName="mail" id="mail" aria-describedby="mail" name="mail" placeholder="Entrer l'address">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="role">Poste:</label>
+                                    <select name="typelist" class="form-select" id="role" formControlName="role">
+                                      <option value="CASHIER">CAISSIER(E) </option>
+                                      <option value="MAGAZINIER"> MAGAZINIER </option>
+                                    </select>
+                                  </div>
+                                </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" (click)="generateUser()">Generer</button>
+                          <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                        </div>
+                      </ng-template>
+
+                      <div *ngIf="valueSearch.length > 0" style="margin-top: 10px;">
+                        <table class="table table-striped table-dark" style="margin-top: 15px;">
+                          <thead class="thead-dark">
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Nom</th>
+                              <th scope="col">Prenom</th>
+                              <th scope="col">Email</th>
+                              <th scope="col">Telephone</th>
+                              <th scope="col">Poste</th>
+                              <th scope="col">CNI</th>
+                              <th scope="col">Crée par </th>
+                              <th scope="col"></th>
+  
+                            </tr>
+                          </thead>
+                          <tbody *ngFor="let systemUser of listSearchParticularReslt; let index=index" >
+                            <tr>
+                              <th scope="row"> {{ index+1 }} </th>
+                              <td>{{systemUser.nom}}</td>
+                              <td> {{ systemUser.prenom }} </td>
+                              <td>{{ systemUser.email }} </td>
+                              <td>{{ systemUser.tel }} </td>
+                              <td> {{ systemUser.role }} </td>
+                              <td>{{ systemUser.cni }} </td>
+                              <td> {{ systemUser.generatedBy }} </td>
+                              <td style="float: right; width: 100%;" align="right">
+                                  <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="openModal(mymodal, systemUser)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <ng-template #mymodal let-modal>
+                          <div class="modal-header">
+                            <h4 class="modal-title" id="modal-basic-title">Supprimer un Employe</h4>
+                            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                              <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                              <span> Voulez-vous vraiment supprimer l'employe {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }} ?</span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" (click)="doDeleteParticular()">Supprimer</button>
+                            <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+  
+                          </div>
+                        </ng-template>
+  
+                            <div class="mainList" *ngIf="valueSearch.length == 0">
+                              <div>
+                                <table class="table table-striped table-dark" style="margin-top: 15px;">
+                                  <thead class="thead-dark">
+                                    <tr>
+                                      <th scope="col">#</th>
+                                      <th scope="col">Nom</th>
+                                      <th scope="col">Prenom</th>
+                                      <th scope="col">Email</th>
+                                      <th scope="col">Telephone</th>
+                                      <th scope="col">Poste</th>
+                                      <th scope="col">CNI</th>
+                                      <th scope="col">Crée par</th>
+                                      <th scope="col"></th>
+          
+                                    </tr>
+                                  </thead>
+                                  <tbody *ngFor="let systemUser of listParticular; let index=index" >
+                                    <tr>
+                                      <th scope="row"> {{ index+1 }} </th>
+                                      <td>{{systemUser.nom}}</td>
+                                      <td> {{ systemUser.prenom }} </td>
+                                      <td>{{ systemUser.email }} </td>
+                                      <td>{{ systemUser.tel }} </td>
+                                      <td> {{ systemUser.role }} </td>
+                                      <td>{{ systemUser.cni }} </td>
+                                      <td> {{ systemUser.generatedBy }} </td>
+                                      <td style="float: right; width: 100%;" align="right">
+                                          <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="openModal(mymodal, systemUser)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <ng-template #mymodal let-modal>
+                                  <div class="modal-header">
+                                    <h4 class="modal-title" id="modal-basic-title">Supprimer un Employe</h4>
+                                    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                                      <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <span> Voulez-vous vraiment supprimer l'employe {{ tmpUserDataToDelete.nom }} {{ tmpUserDataToDelete.prenom }} ?</span>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" (click)="doDeleteParticular()">Supprimer</button>
+                                    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+          
+                                  </div>
+                                </ng-template>
+                            </div>
+                      </div>
+
+
+                </div>
+          
+
+          </div>
+    
+
+
+
+        <div class="content-add-employe"  *ngIf="!isAllEmpBarActive">
+            <form style="margin-top: 0px; padding: 5px;" [formGroup]="newEmployeForm">
+
+              <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" required class="form-control" formControlName="name" [(ngModel)]="newEmploye.nom" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+              </div>
+              <div class="alert alert-danger" *ngIf="newEmployeForm.controls['name'].invalid && (newEmployeForm.controls['name'].dirty || newEmployeForm.controls['name'].touched)" >
+                  <div *ngIf="newEmployeForm.controls['name'].errors" >
+                      <span>le Nom est Obligatoire !</span>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                <label for="surname">Prenom</label>
+                <input type="text" formControlName="surname" class="form-control" [(ngModel)]="newEmploye.prenom" id="surname" name="surname" aria-describedby="surname" placeholder="Entrer le prenom">
+              </div>
+              <div class="alert alert-danger" *ngIf="newEmployeForm.controls['surname'].invalid && (newEmployeForm.controls['surname'].dirty || newEmployeForm.controls['surname'].touched)">
+                  <div *ngIf="newEmployeForm.controls['surname'].errors" >
+                      <span>le Prenom est obligatoire !</span>
+                  </div>
+              </div>
+
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input type="email" formControlName="email" class="form-control" [(ngModel)]="newEmploye.email" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" placeholder="Entrer l'email">
+                </div>
+                <div class="alert alert-danger" *ngIf="newEmployeForm.controls['email'].invalid && (newEmployeForm.controls['email'].dirty || newEmployeForm.controls['email'].touched)">
+                  <div *ngIf="newEmployeForm.controls['email'].errors" >
+                      <span>l'email est obligatoire !</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="tel">Tel</label>
+                  <input type="number" formControlName="tel" class="form-control" [(ngModel)]="newEmploye.tel" id="tel" name="tel" aria-describedby="tel" placeholder="Entre num Telephone">
+                </div>
+                <div class="alert alert-danger" *ngIf="newEmployeForm.controls['tel'].invalid && (newEmployeForm.controls['tel'].dirty || newEmployeForm.controls['tel'].touched)">
+                  <div *ngIf="newEmployeForm.controls['tel'].errors" >
+                      <span>le numero de telephone est obligatoire !</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="tel">Poste</label>
+                  <input type="text" formControlName="poste" class="form-control" [(ngModel)]="newEmploye.poste" id="poste" name="poste" aria-describedby="poste" placeholder="Entre le poste">
+                </div>
+                <div class="alert alert-danger" *ngIf="newEmployeForm.controls['poste'].invalid && (newEmployeForm.controls['poste'].dirty || newEmployeForm.controls['poste'].touched)">
+                  <div *ngIf="newEmployeForm.controls['poste'].errors" >
+                      <span>le poste est obligatoire !</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cni">CNI</label>
+                  <input type="text" class="form-control" id="cni" formControlName="CNI" placeholder="CNI" [(ngModel)]="newEmploye.cni" name="cni">
+                </div>
+                <div class="alert alert-danger" *ngIf="newEmployeForm.controls['CNI'].invalid && (newEmployeForm.controls['CNI'].dirty || newEmployeForm.controls['CNI'].touched)">
+                  <div *ngIf="newEmployeForm.controls['CNI'].errors" >
+                      <span>Identifiant CNI est obligatoire !</span>
+                  </div>
+                </div>
+
+                <button type="reset" class="btn btn-danger" style="float: right;width: 15%; margin-top: 15px; margin-right: 7px;">Annuler</button>
+
+                <button type="submit" class="btn btn-primary" style="float: right;width: 15%; margin-top: 15px;" (click)="doRegisterEmploye()">Ajouter <i class="fa fa-user-plus" aria-hidden="true"></i></button>
+              </form>
+        </div>
+    </div>

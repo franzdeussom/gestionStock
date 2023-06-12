@@ -1,0 +1,36 @@
+<div class="contener">
+    <div class="home-content">
+            <h4>Setting</h4>
+           <div class="fload-right">
+              <i class="fa fa-cog" aria-hidden="true"></i>
+           </div>
+
+           <div *ngIf="devUpdateSrv.showAlertError"  class="alert alert-success alert-dismissible fade show">
+            <span> {{ devUpdateSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="devUpdateSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+       
+           </div>
+           <div *ngIf="devUpdateSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ devUpdateSrv.alert.successMessage }} </span>
+            <button type="button" (click)="devUpdateSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+           <form>
+                <div class="form-group">
+                    <select class="form-select form-select-lg" [(ngModel)]="choice" name="lastUd" (change)="setValidity()">
+                        <option value="Prolonger pour.." selected></option>
+                        <option [value]="validity.A">{{ validity.A }} </option>
+                        <option [value]="validity.B"> {{ validity.B }} </option>
+                        <option [value]="validity.C"> {{ validity.C }} </option>
+                        <option [value]="validity.D"> {{ validity.D }} </option>
+
+                    </select>
+                    <div class="input-group mb-3 input-group-lg">
+                        <span class="input-group-text">Fin de validite : {{ finalValidityDate }} </span>
+                        <input type="text" name="last" class="form-control" [value]="finalValidityDate" [(ngModel)]="finalValidityDate">
+                      </div>
+                </div>
+                <div class="btn btn-primary" style="margin-top: 10px;" (click)="doUpdate()">Prolonger</div>
+           </form>
+    </div>
+</div>

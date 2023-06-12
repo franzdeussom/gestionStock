@@ -1,0 +1,38 @@
+<div class="contener">
+    <div class="home-content">
+        <button style="float:right; right: 0;" class="btn btn-outline-dark" (click)="refresh()">
+            Analyser de nouveau <i class="fa fa-refresh" aria-hidden="true"></i> 
+        </button>
+
+        <div class="text-center" *ngIf="gestionArticleSrv.listArticleToSupply.length == 0 && analysLaunch" >
+            <div class="spinner-border text-primary" role="status">
+              <span>Analyse...</span>
+            </div>
+          </div>
+
+        <div style="margin-top: 10px;">
+            <table class="table table-striped table-dark">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Prix Unitaire</th>  
+                        <th scope="col">Qte en Stock </th> 
+                        <th scope="col">Qte Critique</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let article of gestionArticleSrv.listArticleToSupply; let index=index">
+                    <tr>
+                        <td scope="row"> {{ index + 1 }} </td>
+                        <td scope="row">{{ article.nomArticle }}</td>
+                        <td scope="row"> {{ article.nomType }} </td>
+                        <td scope="row"> {{ article.prixUnitaire }} FCFA </td>
+                        <td scope="row" style="color:red;">{{ article.qteCourrante }}</td>
+                        <td scope="row"> {{ article.qteCritique }} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

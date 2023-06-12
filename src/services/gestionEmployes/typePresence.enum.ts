@@ -1,0 +1,6 @@
+export enum Statut {
+ABSENT='ABSENT',
+PRESENT='PRESENT',
+REGLE="REGLE",
+NON_REGLE="NON_REGLE"
+}

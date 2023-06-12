@@ -1,0 +1,249 @@
+<div class="contener">
+    <div class="home-content">
+
+        <div class="head">
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="changeToAllArticle()">
+                     <a class="nav-link active" #allArticle>Mon Stock</a>
+                </li>
+                <li class="nav-item" (click)="changeToAddArticle()">
+                     <a class="nav-link " #addArticle>Approvisionner le stock</a>
+                </li>
+            </ul>
+        </div>
+        <div *ngIf="gestionArticleSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ gestionArticleSrv.alert.successMessage }} </span>
+            <button type="button" (click)="gestionArticleSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="gestionArticleSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+            <span> {{ gestionArticleSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="gestionArticleSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+
+        <div *ngIf="isAllArticle;then showAllArticle else showAdd" ></div>
+
+        <ng-template #showAllArticle>
+            <div class="input-group" style="text-align: center; margin-top: 10px;">
+                <div class="form-outline" style="width: 95%;">
+                  <input type="search" id="form1" (keyup)="search()" [(ngModel)]="searchValue" class="form-control" placeholder="rechercher un article, type ou nom"/>
+                </div>
+                <button type="button" class="btn btn-primary" disabled>
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+
+              <div style="margin-top: 10px; margin-bottom: 5px;">
+                <span  class="badge bg-info text-dark"> {{ gestionArticleSrv.nbrToTalDarticle }} Produits en Stock </span>
+              </div>
+
+              <button style="float:right; right: 0;" class="btn btn-outline-dark" (click)="refrech()">
+                Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+              </button>
+
+              <div class="text-center" *ngIf="gestionArticleSrv.listArticle.length == 0" >
+                <div class="spinner-border text-primary" role="status">
+                  <span>Chargement...</span>
+                </div>
+              </div>
+
+                <div *ngIf="searchValue.length > 0" style="margin-top: 10px;">
+                    <table class="table table-striped table-dark">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Prix Unitaire</th>  
+                            <th scope="col">Qte en Stock </th> 
+                            <th scope="col">Qte Critique</th>
+                            <th scope="col"> Actions </th>        
+                        </tr>
+                        </thead>
+                        <tbody *ngFor="let article of listSearch; let index=index">
+                        <tr>
+                            <td scope="row"> {{ index }} </td>
+                            <td scope="row">{{ article.nomArticle }}</td>
+                            <td scope="row"> {{ article.nomType }} </td>
+                            <td scope="row"> {{ article.prixUnitaire }} </td>
+                            <td scope="row">{{ article.qteCourrante }}</td>
+                            <td scope="row"> {{ article.qteCritique }} </td>
+                            <td scope="row"> 
+                                    <button class="btn btn-success" (click)="openModal(mymodal, article)">Ajuster la quantité</button>        
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="searchValue.length === 0" >
+                    <table class="table table-striped table-dark">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Prix Unitaire</th>  
+                                <th scope="col">Qte en Stock </th> 
+                                <th scope="col">Qte Critique</th>
+                                <th scope="col"> Actions </th>        
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let article of gestionArticleSrv.listArticle; let index=index">
+                            <tr>
+                                <td scope="row"> {{ index }} </td>
+                                <td scope="row">{{ article.nomArticle }}</td>
+                                <td scope="row"> {{ article.nomType }} </td>
+                                <td scope="row"> {{ article.prixUnitaire }} FCFA </td>
+                                <td scope="row">{{ article.qteCourrante }}</td>
+                                <td scope="row"> {{ article.qteCritique }} </td>
+                                <td scope="row"> 
+                                        <button class="btn btn-success" (click)="openModal(mymodal, article)">Ajuster la quantité</button>        
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ng-template #mymodal let-modal>
+                    <div class="modal-header">
+                      <h4 class="modal-title" id="modal-basic-title">Ajuster la Quantite</h4>
+                      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                        <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                                <div class="">
+                                    <div class="form-group">
+
+                                        <div class="form-group" >
+                                            <label for="type">Type</label>
+                                            <input type="text" disabled [(ngModel)]="tmpArticleToUpdate.nomType" required class="form-control"  id="type"  name="nomType">
+                                            
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                            <label for="name">Libelle de l'article</label>
+                                            <input type="text" disabled [(ngModel)]="tmpArticleToUpdate.nomArticle" class="form-control"  id="name" aria-describedby="name" name="name">
+                                    </div>
+                                    
+                                    <form [formGroup]="newUpdateFromControl">
+                                        <div class="form-group">
+                                                <label for="qteCourrante">Nouvelle quantité:</label>
+                                                <input type="number" formControlName="qty" required class="form-control" [(ngModel)]="newArticle.qteCourrante" id="qteCourrante" name="qteCourrante">
+                                        </div>
+                                        <div class="alert alert-danger" *ngIf="newUpdateFromControl.controls['qty'].invalid && (newUpdateFromControl.controls['qty'].dirty || newUpdateFromControl.controls['qty'].touched)" >
+                                            <div *ngIf="newUpdateFromControl.controls['qty'].errors">
+                                                <span>Ce champs est obligatoire</span>
+                                            </div>
+                                        </div>
+                                   </form>
+
+                                </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" (click)="doUpdate()">Ajuster</button>
+                      <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+
+                    </div>
+                  </ng-template>
+        </ng-template>
+
+        <ng-template #showAdd>
+
+                <div>
+                    <div class="row">
+                        <div class="col-sm-15">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <span>Ajout d'un nouvel article</span>
+                                    </div>
+                                </div>
+                                <div class="card-title">
+                                    <div class="btn btn-primary" (click)="addToTheStock()" style="position:relative;float: right; right: 0; top: 5px; margin-right: 10px;">Ajouter Au stock</div>
+                                </div>
+                                <div class="card-body">
+
+                                    <form [formGroup]="newArticleFormControl">
+
+                                        <div class="form-group">
+
+                                            <div class="form-group" >
+                                                <label for="type">Type</label>
+                              
+                                                <select name="type" class="form-select" id="type"  formControlName="nomType" (change)="setParamArticle(newArticle.nomType)">
+                                                    <option  *ngFor="let type of gestionTypeArticle.listTypeOfArticle; let index=index" [value]="type.libelle">  {{ type.libelle }} </option>
+                                                </select>
+                                            </div>
+                                            <div class="alert alert-danger" *ngIf="newArticleFormControl.controls['nomType'].invalid && (newArticleFormControl.controls['nomType'].dirty || newArticleFormControl.controls['nomType'].touched)">
+                                                <div *ngIf="newArticleFormControl.controls['nomType'].errors">
+                                                        <span>Le type est obligatoire</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                                <label for="name">Libelle de l'article</label>
+                                                <input type="text" formControlName="name" required class="form-control"  id="name" aria-describedby="name" name="name" placeholder="Entrer le nom de l'article">
+                                        </div>
+                                        <div class="alert alert-danger" *ngIf="newArticleFormControl.controls['name'].invalid && (newArticleFormControl.controls['name'].dirty || newArticleFormControl.controls['name'].touched)">
+                                            <div *ngIf="newArticleFormControl.controls['name'].errors">
+                                                <span>L'intitulé est obligatoire</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                                <label for="qteCourrante">Quantite d'approvisionnement :</label>
+                                                <input type="number" (keyup)="defineTotalArticlePrice()" formControlName="qteCourrante" required class="form-control" [(ngModel)]="newArticle.qteCourrante" id="qteCourrante" name="qteCourrante">
+                                        </div>
+                                        <div class="alert alert-danger" *ngIf="newArticleFormControl.controls['qteCourrante'].invalid && (newArticleFormControl.controls['qteCourrante'].dirty || newArticleFormControl.controls['qteCourrante'].touched)">
+                                            <div *ngIf="newArticleFormControl.controls['qteCourrante'].errors">
+                                                <span>La Quantité d'approvisionnement est obligatoire</span>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <div class="card" style="margin-top: 25px;">
+                                        <div class="card-header">
+                                            <span>Details Importants</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="qteCritique" class="form-label">Quantite Critique :</label>
+                                                <div class="input-group">
+                                                        <input type="number" [disabled]="true" required class="form-control" [(ngModel)]="newArticle.qteCritique" id="qteCritique" name="qteCritique">
+                                                </div>
+        
+                                                <label for="prixUnitaire" class="form-label">Prix Unitaire :</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="number" [disabled]="true" required class="form-control" [(ngModel)]="newArticle.prixUnitaire"  id="prixUnitaire" aria-describedby="name" name="prixUnitaire">
+                                                    <span class="input-group-text">FCFA</span>
+                                                </div>
+        
+                                                <label for="gain" class="form-label">Depense total d'achat :</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="number" [disabled]="true" required class="form-control"  [(ngModel)]="newArticle.coutTotal" id="gain" aria-describedby="name" name="gain">
+                                                    <span class="input-group-text">FCFA</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </ng-template>
+
+    </div>
+</div>

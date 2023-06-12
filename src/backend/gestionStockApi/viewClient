@@ -1,0 +1,12 @@
+<?php 
+header('Access-Control-Allow-Origin: *');
+include('fonction.php');
+include('bdConnect.php');
+
+$fonction = new Fonction($bd);
+$GET = $fonction->viewClients();
+
+ json_encode($GET);
+
+
+?>

@@ -1,0 +1,85 @@
+<nav class="nav">
+    <div class="welcome-word">
+        <span>SECTION, 
+            <span *ngIf="checkingUser.isAdmin" > Admininstration </span>
+            <span *ngIf="checkingUser.isCashier">Caisse</span>
+            <span *ngIf="checkingUser.isDirector" > Direction </span>
+            <span *ngIf="checkingUser.isStockeeper" > Magazin</span>
+            <span *ngIf="checkingUser.isDevelopper" >Developpeur...</span>
+        </span>
+        <div *ngIf="checkingUser.isAdmin || checkingUser.isDirector || checkingUser.isDevelopper" >
+          <span style="font-size: 13px; margin-left: 5px;">Date Expiration du system : {{ checkingUser.currentUserData.endValidity }} </span>
+        </div>
+    </div>
+    
+    <div class="container d-flex align-items-center justify-content-center" style="float: right; right: 0;">
+        <button type="button" class="btn btn-primary position-relative" (click)="openModalModif(mymodal)">
+            <i class="fa fa-user-circle-o" aria-hidden="true"> </i>
+            {{ checkingUser.currentUserData.nom }} {{ checkingUser.currentUserData.prenom }}
+        
+            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+              <span class="visually-hidden"></span>
+            </span>
+          </button>
+
+           <button class="btn btn-danger"  (click)="logOut()"> 
+                Deconnexion <i class="fa fa-sign-out" aria-hidden="true"></i>
+            </button>
+            
+    </div>
+
+    <ng-template #mymodal let-modal>
+        
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">Modification mot de passe:</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+            <div *ngIf="checkingUser.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                <span> {{ checkingUser.alert.successMessage }} </span>
+                <button type="button" (click)="checkingUser.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+    
+              <div *ngIf="checkingUser.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-times-circle" aria-hidden="true"></i>
+                <span> {{ checkingUser.alert.errorMessage }} </span>
+                <button type="button" (click)="checkingUser.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+
+                <form  [formGroup]="formModif">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <img src="../../../assets/avatar.png" alt="Admin" class="rounded-circle" width="150">
+                        
+                        <div class="mt-3">
+                          <h4>{{ checkingUser.currentUserData.nom }} {{ checkingUser.currentUserData.prenom }} </h4>
+                          <p class="text-secondary mb-1">{{  checkingUser.currentUserData.role }} </p>
+                          <p class="text-muted font-size-sm"> {{ checkingUser.currentUserData.email }}  </p>
+                        </div>
+                    </div>
+                      <div class="form-group">
+                        <label for="surname">Entrer le nouveau mot de passe :</label>
+                        <input type="password" formControlName="newPassword" class="form-control"  id="pass" name="pass" aria-describedby="surname">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="surname">Confirmer le nouveau mot de passe :</label>
+                        <input type="password" (keyup)="checkConfirmPass()" formControlName="confirmPassword" class="form-control"  id="passC" name="cpass" aria-describedby="surname">
+                      </div>
+                </form>
+                <div class="form-group">
+                    <label for="surname">Entrer le mot de passe actuel :</label>
+                    <input type="password" [(ngModel)]="password" class="form-control"  id="currentPass" name="surname" aria-describedby="surname">
+                  </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doModifAccount()"> Changer </button>
+          <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Annuler</button>
+        </div>
+      </ng-template>
+
+  </nav>
+  

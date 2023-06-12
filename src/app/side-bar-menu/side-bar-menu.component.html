@@ -1,0 +1,240 @@
+<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }">
+    <div class="header">
+      <h1 class="title">
+        <div class="text-center">          
+            <img src="../../assets/logo.png"  height="100px" width="50%" style="border-radius: 50%;" alt="">
+        </div>
+        <div class="text-center">
+            
+            <p>STORE IT UP</p>
+        </div>
+      </h1>
+      <div class="toggle" (click)="handleSidebarToggle()">
+        <span class="chevron"></span>
+      </div>
+    </div>
+    <div class="content">
+
+
+      <div *ngIf="typeUser.isStockeeper || typeUser.isDirector">
+        <div class="link" *ngIf="typeUser.isDirector" >
+          <div class="content" [routerLink]="['home/dashboard']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </div>
+            <div class="title active">Home</div>
+          </div>
+        </div>
+        <div class="link" *ngIf="typeUser.isStockeeper" >
+          <div class="content" [routerLink]="['magazinier/dashboard']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </div>
+            <div class="title active">Home</div>
+          </div>
+        </div>
+      <div class="link with-children" *ngIf="typeUser.isStockeeper">
+        <div class="content" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-address-book" aria-hidden="true"></i>
+          </div>
+          <div class="title">Gestion</div>
+        </div>
+        <div class="children">
+          <div class="link">
+            <div class="content" [routerLink]="['/gestion/stock']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-database" aria-hidden="true"></i>
+              </div>
+              <div class="title">Stock</div>
+            </div>
+          </div>
+          <div class="link">
+            <div class="content" [routerLink]="['stock/analyse']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-address-card" aria-hidden="true"></i>
+              </div>
+              <div class="title">Analyse Rapide</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="typeUser.isDirector">
+        <div class="link">
+          <div class="content" [routerLink]="['director/present-list']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-id-card-o" aria-hidden="true"></i>
+            </div>
+            <div class="title active">Fiche de Presence</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/stock']"
+            [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-database" aria-hidden="true"></i>
+            </div>
+            <div class="title"> Stock</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/employee-list']"  [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-users" aria-hidden="true"></i>
+            </div>
+            <div class="title">Employes</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/holiday-request']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-tree" aria-hidden="true"></i>
+            </div>
+            <div class="title">Conges</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/charge']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+            </div>
+            <div class="title">Charge</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/list-emprunts']"
+            [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-database" aria-hidden="true"></i>
+            </div>
+            <div class="title">list d'emprunts</div>
+          </div>
+        </div>
+        <div class="link">
+          <div class="content" [routerLink]="['director/sanction']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-window-close" aria-hidden="true"></i>
+            </div>
+            <div class="title">Sanction</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="link" *ngIf="typeUser.isDirector" >
+        <div class="content" [routerLink]="['director/rapport']" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-list" aria-hidden="true"></i>
+          </div>
+          <div class="title">Resume</div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div *ngIf="typeUser.isCashier" >
+      <div class="link">
+        <div class="content" [routerLink]="['cashier/etablir-commande']" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-home" aria-hidden="true"></i>
+          </div>
+          <div class="title active">Enregistré une Vente</div>
+        </div>
+      </div>
+      <div class="link with-children">
+        <div class="content" [routerLink]="['cashier/resume']" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-address-book" aria-hidden="true"></i>
+          </div>
+          <div class="title">Resume</div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div *ngIf="typeUser.isAdmin" >
+      <div class="link">
+        <div class="content" [routerLink]="['admin/employes']" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-home" aria-hidden="true"></i>
+          </div>
+          <div class="title active">Nos Employes</div>
+        </div>
+      </div>
+  
+      <div class="link with-children">
+  
+        <div class="content" [routerLinkActive]="'active'">
+          <div class="icon">
+            <i class="fa fa-address-book" aria-hidden="true"></i>
+          </div>
+          <div class="title">Rapports</div>
+        </div>
+  
+        <div class="children">
+  
+          <div class="link">
+            <div class="content" [routerLink]="['admin/rapport/ventes']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-database" aria-hidden="true"></i>
+              </div>
+              <div class="title">Ventes</div>
+            </div>
+          </div>
+  
+          <div class="link">
+            <div class="content" [routerLink]="['admin/rapport/stock']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-address-card" aria-hidden="true"></i>
+              </div>
+              <div class="title">Stock</div>
+            </div>
+          </div>
+  
+          <div class="link">
+            <div class="content" [routerLink]="['admin/rapport/presence']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-users" aria-hidden="true"></i>
+              </div>
+              <div class="title">Presences</div>
+            </div>
+          </div>
+
+          <div class="link">
+            <div class="content" [routerLink]="['admin/rapport/stats']"
+              [routerLinkActive]="'active'">
+              <div class="icon">
+                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+              </div>
+              <div class="title">Statistique</div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="typeUser.isDevelopper">
+        <div class="link">
+          <div class="content" [routerLink]="['developper/setting']" [routerLinkActive]="'active'">
+            <div class="icon">
+              <i class="fa fa-cog" aria-hidden="true"></i>
+              <div class="title">Parametre</div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+    <div class="footer">
+        <h6>The MAD</h6> 
+    </div>
+   </div>
+  </div>

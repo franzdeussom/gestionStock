@@ -1,0 +1,199 @@
+<div class="contener">
+    <div class="home-content">
+        <div class="head">
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="switchTab()">
+                     <a class="nav-link active" #tabNewCommand>Nouvelle Vente</a>
+                </li>
+                <li class="nav-item" (click)="switchTab()">
+                    <a class="nav-link" #tabEmprunt>Enregistrer  un Emprunt</a>
+                </li>
+            </ul>
+
+        </div>
+
+          <div *ngIf="articleSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ articleSrv.alert.successMessage }} </span>
+            <button type="button" (click)="articleSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="articleSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+            <span> {{ articleSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="articleSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+        
+        <div class="content">
+          <div *ngIf="!isTabEmpruntOpen">
+            <div class="card">
+                <div class="card-header">
+                  Reference de la Vente
+                </div>
+                <form [formGroup]="formCommandControl">                      
+                <div class="card-body">
+                    <div class="row g-2">
+                          <div class="form-floating">
+
+                            <select class="form-select" formControlName="type" name="type"  id="floatingSelectGrid" (change)="getListFilterByType()" aria-label="Floating label select example">
+                              <option *ngFor="let type of typeArticleSrv.listTypeOfArticle" [value]="type.libelle"> {{ type.libelle }} </option>
+                            </select>
+                            <label for="floatingSelectGrid"> Type </label>
+                          </div>
+                          <div class="alert alert-danger" *ngIf="formCommandControl.controls['type'].invalid && (formCommandControl.controls['type'].dirty || formCommandControl.controls['type'].touched)">
+                                <div *ngIf="formCommandControl.controls['type'].errors" >
+                                        <span>Ce champs (type) est obligatoire</span>
+                                </div>
+                          </div>
+                        </div>
+
+                            <div class="form-floating" style="margin-top: 10px;">
+                              <select class="form-select" name="name" formControlName="name" (change)="isQtyAvailable()"  id="floatingSelectGrid" aria-label="Floating label select example">
+                                <option *ngFor="let article of listFilterByType" [value]="article.idArticle"> {{ article.nomArticle }} </option>
+                              </select>
+                              <label for="floatingSelectGrid"> Nom </label>
+                            </div>
+                            <div class="alert alert-danger" *ngIf="formCommandControl.controls['name'].invalid && (formCommandControl.controls['name'].dirty || formCommandControl.controls['name'].touched)">
+                                <div *ngIf="formCommandControl.controls['name'].errors">
+                                    <span>Ce champs (libelle) est obligatoire</span>
+                                </div>
+                            </div>
+
+
+                      <div class="input-group mb-3" style="margin-top: 10px;">
+                        <span class="input-group-text" id="basic-addon1">Quantite</span>
+                        <input type="number" class="form-control" name="quantite" formControlName="quantite" (keyup)="isQtyAvailable()" placeholder="quantité ?" aria-label="Username" aria-describedby="basic-addon1">
+                      </div>
+                      <div class="alert alert-danger" *ngIf="formCommandControl.controls['quantite'].invalid && (formCommandControl.controls['quantite'].dirty || formCommandControl.controls['quantite'].touched) ">
+                        <div *ngIf="formCommandControl.controls['quantite'].errors">
+                            <span>veuillez entrer la quantite </span>
+                        </div>
+                      </div> 
+
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Prix de vente</span>
+                        <input type="number" class="form-control" formControlName="prixVente" (keyup)="getTotalPrice()" name="prixVente" placeholder="Prix de vente" aria-label="Username" aria-describedby="basic-addon1">
+                      </div>
+                      <div class="alert alert-danger" *ngIf="formCommandControl.controls['prixVente'].invalid && (formCommandControl.controls['prixVente'].dirty || formCommandControl.controls['prixVente'].touched)" >
+                        <div *ngIf="formCommandControl.controls['prixVente'].errors">
+                            <span>Ce champ (prix de vente de l'article) est obligatoire</span>
+                        </div>
+                      </div> 
+                      
+
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Date</span>
+                        <input type="text" name="date"  class="form-control" formControlName="date" [value]="formCommandControl.get('date')?.value" aria-label="Username" aria-describedby="basic-addon1">
+                      </div> 
+                      <div *ngIf="formCommandControl.controls['date'].invalid && (formCommandControl.controls['date'].dirty || formCommandControl.controls['date'].touched)" >
+                        <div *ngIf="formCommandControl.controls['date'].errors">
+                            <span>la date est obligatoire</span>
+                        </div>
+                      </div>
+                    </div>
+                </form>   
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Total à payer</span>
+                  <input type="number" class="form-control" [disabled]="true" [(ngModel)]="newVente.totalAPayer" placeholder="total à payer" aria-label=""  name="totalAPayer" aria-describedby="basic-addon1">
+                  <span class="input-group-text">FCFA</span>
+                </div> 
+                
+                <div>
+                  <button class="btn btn-primary" (click)="save()" style="float: right;"> Enregistré la vente <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                </div>
+              </div>
+        </div>
+      </div>
+
+      <div *ngIf="isTabEmpruntOpen">
+        <div class="card">
+          <div class="card-header">
+            Reference de l'Emprunt
+          </div>
+          <form [formGroup]="formEmpruntControl">                      
+          <div class="card-body">
+              <div class="row g-2">
+                    <div class="form-floating">
+
+                      <select class="form-select" formControlName="type" name="type"  id="floatingSelectGrid" (change)="getListFilterByTypeEmprunt()" aria-label="Floating label select example">
+                        <option *ngFor="let type of typeArticleSrv.listTypeOfArticle" [value]="type.libelle"> {{ type.libelle }} </option>
+                      </select>
+                      <label for="floatingSelectGrid"> Type </label>
+                    </div>
+                    <div class="alert alert-danger" *ngIf="formEmpruntControl.controls['type'].invalid && (formEmpruntControl.controls['type'].dirty || formEmpruntControl.controls['type'].touched)">
+                          <div *ngIf="formEmpruntControl.controls['type'].errors" >
+                                  <span>Ce champs (type) est obligatoire</span>
+                          </div>
+                    </div>
+                  </div>
+
+                      <div class="form-floating" style="margin-top: 10px;">
+                        <select class="form-select" name="name" formControlName="name" (change)="isQtyAvailableEmprunt()"  id="floatingSelectGrid" aria-label="Floating label select example">
+                          <option *ngFor="let article of listFilterByType" [value]="article.idArticle"> {{ article.nomArticle }} </option>
+                        </select>
+                        <label for="floatingSelectGrid"> Nom l'article :</label>
+                      </div>
+                      <div class="alert alert-danger" *ngIf="formEmpruntControl.controls['name'].invalid && (formEmpruntControl.controls['name'].dirty || formEmpruntControl.controls['name'].touched)">
+                          <div *ngIf="formEmpruntControl.controls['name'].errors">
+                              <span>Ce champs (libelle) est obligatoire</span>
+                          </div>
+                      </div> 
+
+                <div class="input-group mb-3" style="margin-top: 10px;">
+                  <span class="input-group-text" id="basic-addon1">Nom Du personnel :</span>
+                    <select name="name" class="form-select" id="" (change)="checkUser()" formControlName="nameUser">
+                        <option  *ngFor="let employe of listEmploye let index=index" [value]="employe.nom + ' ' + employe.prenom">  {{ employe.nom + ' ' + employe.prenom}} </option>
+                    </select>
+                </div>
+
+                <div class="input-group mb-3" style="margin-top: 10px;">
+                  <span class="input-group-text" id="basic-addon1">Quantite</span>
+                  <input type="number" class="form-control" name="quantite" formControlName="quantite" (keyup)="isQtyAvailableEmprunt()" placeholder="quantité ?" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="alert alert-danger" *ngIf="formEmpruntControl.controls['quantite'].invalid && (formEmpruntControl.controls['quantite'].dirty || formEmpruntControl.controls['quantite'].touched) ">
+                  <div *ngIf="formEmpruntControl.controls['quantite'].errors">
+                      <span>veuillez entrer la quantite </span>
+                  </div>
+                </div> 
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Prix de vente</span>
+                  <input type="number" class="form-control" formControlName="prixVente" (keyup)="getTotalPriceEmprunt()" name="prixVente" placeholder="Prix de vente" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="alert alert-danger" *ngIf="formEmpruntControl.controls['prixVente'].invalid && (formEmpruntControl.controls['prixVente'].dirty || formEmpruntControl.controls['prixVente'].touched)" >
+                  <div *ngIf="formEmpruntControl.controls['prixVente'].errors">
+                      <span>Ce champ (prix de vente de l'article) est obligatoire</span>
+                  </div>
+                </div> 
+                
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Date</span>
+                  <input type="text" name="date"  class="form-control" formControlName="date" [value]="formEmpruntControl.get('date')?.value" aria-label="Username" aria-describedby="basic-addon1">
+                </div> 
+                <div *ngIf="formEmpruntControl.controls['date'].invalid && (formEmpruntControl.controls['date'].dirty || formEmpruntControl.controls['date'].touched)" >
+                  <div *ngIf="formEmpruntControl.controls['date'].errors">
+                      <span>la date est obligatoire</span>
+                  </div>
+                </div>
+              </div>
+          </form>   
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Total à payer</span>
+            <input type="number" class="form-control" [disabled]="true" [(ngModel)]="newEmprunt.netAPayer" placeholder="total à payer" aria-label=""  name="totalAPayer" aria-describedby="basic-addon1">
+            <span class="input-group-text">FCFA</span>
+          </div> 
+          
+          <div>
+            <button class="btn btn-primary" (click)="saveEmprunt()" style="float: right;"> Enregistré l'Emprunt <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+</div>

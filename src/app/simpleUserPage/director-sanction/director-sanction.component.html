@@ -1,0 +1,137 @@
+<div class="contener">
+    <div class="home-content">
+        <div class="head" >
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="swichTab()">
+                     <a class="nav-link active" #newSanction>Enregistrer une Sanction</a>
+                </li>
+                <li class="nav-item" (click)="swichTab()">
+                     <a class="nav-link " #allSanction>Liste Des Sanctions</a>
+                </li>
+            </ul>
+        </div>
+
+        <div *ngIf="sanctionSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ sanctionSrv.alert.successMessage }} </span>
+            <button type="button" (click)="sanctionSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="sanctionSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+            <span> {{ sanctionSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="sanctionSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+        <div *ngIf="!isTabListOpen;then  newSanctionRegister else list" ></div>
+
+        <ng-template #newSanctionRegister style="margin-top: 10px;">
+
+                <div class="card" style="margin-top: 10px;">
+                    <div class="card-header">
+                         <div>Nouvelle Sanction</div>   
+                    </div>
+                    <div class="card-body">
+                       <form [formGroup]="sanctionFormControl">
+
+                        <div class="form-floating">
+                            <select class="form-select" formControlName="nom" name="name"  id="floatingSelectGrid" (change)="setName()" aria-label="Floating label select example">
+                            <option *ngFor="let employe of listEmploye" [value]="employe.nom + '' + employe.prenom"> {{ employe.nom }} {{ employe.prenom }} </option>
+                            </select>
+                            <label for="floatingSelectGrid"> Nom de l'Employe </label>
+                        </div>
+
+                            <div class="form-floating">
+                                <select class="form-select" formControlName="motif" name="motif"  id="floatingSelectGrid" (change)="setAmande()" aria-label="Floating label select example">
+                                    <option [value]="motifList.ABSENCE_JUSTIFIE"> {{ motifList.ABSENCE_JUSTIFIE }} </option>
+                                    <option [value]="motifList.ABSENCE_NON_JUSTIFIE"> {{ motifList.ABSENCE_NON_JUSTIFIE }} </option>
+                                    <option [value]="motifList.CONSOMMATION"> {{ motifList.CONSOMMATION }} </option>
+                                    <option [value]="motifList.DISTRACTION"> {{ motifList.DISTRACTION }} </option>
+                                    <option [value]="motifList.JEUDI_PROPRE"> {{ motifList.JEUDI_PROPRE }} </option>
+                                    <option [value]="motifList.RETARD_NON_JUSTIFIE"> {{ motifList.RETARD_NON_JUSTIFIE }} </option>
+                                    <option [value]="motifList.SOMMEIL"> {{ motifList.SOMMEIL }} </option>
+                                    <option [value]="motifList.SUSPENSION_TMP"> {{ motifList.SUSPENSION_TMP }} </option>
+                                    <option [value]="motifList.VAGABONDAGE_INSUBORDINATION"> {{ motifList.VAGABONDAGE_INSUBORDINATION}} </option>                           
+                                </select>
+                                <label for="floatingSelectGrid"> Motif </label>
+                            </div>
+                            
+                            <div class="input-group mb-3" style="margin-top: 10px;">
+                                <span class="input-group-text" id="basic-addon1"> Prix d'Amande : </span>
+                                <input type="number" class="form-control" name="amande" formControlName="amande"  placeholder="amande ?"  aria-describedby="basic-addon1">
+                            </div>
+
+                            <div class="input-group mb-3" style="margin-top: 10px;">
+                                <span class="input-group-text" id="basic-addon1"> date : </span>
+                                <input type="text" class="form-control" name="date" formControlName="date"  placeholder="date ?"  aria-describedby="basic-addon1">
+                            </div>
+                     </form>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="btn btn-primary" style="float: right; margin-right: 10px;" (click)="createSanction()">Enregister <i class="fa fa-floppy-o" aria-hidden="true"></i></div>
+                    </div>
+                </div>
+
+        </ng-template>
+
+
+
+
+        <ng-template #list style="margin-top: 10px;">
+            <button class="btn btn-outline-dark" (click)="refrech()">
+                Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+              </button>
+              <div class="text-center" *ngIf="sanctionSrv.listSanction.length == 0" >
+                <div class="spinner-border text-primary" role="status">
+                  <span>Chargement...</span>
+                </div>
+              </div>
+            <div>
+                <div class="card" style="margin-top: 10px; margin-bottom: 5px" *ngFor="let sanction of sanctionSrv.listSanction; let index=index">
+                    <div class="card-header">
+                         <div> {{ index+1 }} </div>   
+                    </div>
+                    <div class="card-body">
+                       <form>
+
+                        <div class="input-group mb-3">
+                             <span class="input-group-text"> Nom de l'Employe </span>
+                             <input type="text" class="form-control" name="name"  [value]="sanction.nom + ' ' + sanction.prenom" [disabled]="true" aria-describedby="basic-addon1">
+                             
+                        </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"> poste :</span>
+                                <input type="text" class="form-control" name="poste"  [value]="(sanction.poste | typeof) === 'string' ? sanction.poste:sanction.role" [disabled]="true" aria-describedby="basic-addon1">
+                                
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"> Motif :</span>
+                                <input type="text" class="form-control" name="amount" [value]="sanction.motif" [disabled]="true" aria-describedby="basic-addon1">
+                            </div>
+                            
+                            <div class="input-group mb-3" style="margin-top: 10px;">
+                                <span class="input-group-text" id="basic-addon1"> Prix d'Amande : </span>
+                                <input type="number" class="form-control" name="amande"  [value]="sanction.amande" [disabled]="true" placeholder="amande ?"  aria-describedby="basic-addon1">
+                            </div>
+
+                            <div class="input-group mb-3" style="margin-top: 10px;">
+                                <span class="input-group-text" id="basic-addon1"> date : </span>
+                                <input type="text" class="form-control" name="date" [value]="sanction.dates" [disabled]="true" aria-describedby="basic-addon1">
+                            </div>
+                     </form>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="btn btn-danger" style="float: right; margin-right: 10px;" (click)="delSanction(sanction.id, index)" *ngIf="(sanction.id | typeof) === 'number'">Supprimer</div>
+                    </div>
+                </div>
+
+            </div>
+        </ng-template>
+
+
+    </div>
+</div>

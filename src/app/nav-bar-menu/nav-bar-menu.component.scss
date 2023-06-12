@@ -1,0 +1,48 @@
+nav{
+    width: 100%;
+    position: fixed;
+    height: fit-content;
+    top: 0;
+    min-height: 12vh;
+    background: #1d1e2c;
+    z-index: 1;
+
+    .welcome-word{
+        display: flex;
+        left: 0;
+        top: 12px;
+        float: left;
+        color: aliceblue;
+        margin-left: 10px;
+        font-size: 18px;
+
+    }
+
+    .profil{
+        float: right;
+        right: 0;
+        top: 12px;
+        margin-right: 10px;
+        position: fixed;
+        z-index: 1;
+    }
+
+    .modif{
+        float: right;
+        right: 0;
+        top: 12px;
+        margin-right: 20px;
+        position: fixed;
+        z-index: 1;
+    }
+
+}
+.content{
+    margin-top: 10%;
+    .home-content{
+        margin-top: 15px;
+
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+}

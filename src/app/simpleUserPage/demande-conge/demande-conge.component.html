@@ -1,0 +1,213 @@
+
+<div class="contener">
+    <div class="home-content">
+        <div class="head">
+            <ul class="nav nav-tabs">
+                <li class="nav-item" (click)="changeToCreateHoliday()">
+                     <a class="nav-link active" #allEmp>Congé des Employes</a>
+                </li>
+                <li class="nav-item" (click)="changeToHolidayApprouve()">
+                     <a class="nav-link " #addEmp>Employe en Congé</a>
+                </li>
+            </ul>
+        </div>
+          <div *ngIf="congeSrv.showAlertSucess"  class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+            <span> {{ congeSrv.alert.successMessage }} </span>
+            <button type="button" (click)="congeSrv.closeSuccessAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="congeSrv.showAlertError"  class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+            <span> {{ congeSrv.alert.errorMessage }} </span>
+            <button type="button" (click)="congeSrv.closeErrorAlert()" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+
+
+        <div *ngIf="isCreateHolidayBarActive">
+            <form style="margin-top: 0px; padding: 10px;" [formGroup]="holidayForm">
+
+                <div class="form-group" >
+                  <label for="exampleInputEmail1">Nom</label>
+
+                  <select name="name" class="form-select" id="" [(ngModel)]="newHolidayRequest.nom" (change)="checkUser(newHolidayRequest.nom)" formControlName="name">
+                      <option selected [value]="null">--Selectioner un employe--</option>
+                      <option  *ngFor="let employe of listEmploye let index=index" [value]="employe.nom + ' ' + employe.prenom">  {{ employe.nom + ' ' + employe.prenom}} </option>
+                  </select>
+
+                </div>
+                <div *ngIf="holidayForm.controls['name'].invalid && (holidayForm.controls['name'].dirty || holidayForm.controls['name'].touched)" class="alert alert-danger">
+                    <div *ngIf="holidayForm.controls['name'].errors" >
+                        Nom est Obligatoire !
+                    </div>
+               </div>
+
+                <div class="form-group">
+                  <label for="name">Date de Depart</label>
+                  <input type="date" required class="form-control" formControlName="dateDepart" [(ngModel)]="newHolidayRequest.dateDepart" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+                </div>
+                <div *ngIf="holidayForm.controls['dateDepart'].invalid && (holidayForm.controls['dateDepart'].dirty || holidayForm.controls['dateDepart'].touched)" class="alert alert-danger">
+                  <div *ngIf="holidayForm.controls['dateDepart'].errors">
+                      La Date de depart est Obligatoire !
+                  </div>
+                </div>
+                 
+  
+                <div class="form-group">
+                  <label for="surname">Date de Retour</label>
+                  <input type="date"  required class="form-control" formControlName="dateRetour" [(ngModel)]="newHolidayRequest.dateRetour" id="surname" name="surname" aria-describedby="surname" placeholder="Entrer le prenom">
+                </div>
+                <div *ngIf="holidayForm.controls['dateRetour'].invalid && (holidayForm.controls['dateRetour'].dirty || holidayForm.controls['dateRetour'].touched)" class="alert alert-danger">
+                  <div *ngIf="holidayForm.controls['dateRetour'].errors">
+                      La Date de Retour est Obligatoire !
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="tel">Motif</label>
+                  <input type="text" required class="form-control" formControlName="reason"  [(ngModel)]="newHolidayRequest.motif" id="tel" name="tel" aria-describedby="tel" placeholder="veuillez entrer le motif...">
+                </div>
+                <div *ngIf="holidayForm.controls['reason'].invalid && (holidayForm.controls['reason'].dirty || holidayForm.controls['reason'].touched)" class="alert alert-danger">
+                  <div *ngIf="holidayForm.controls['reason'].errors">
+                      le motif est Obligatoire !
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="tel">Poste de l'employe</label>
+                  <input type="text" required class="form-control" formControlName="posteEmploye" [(ngModel)]="newHolidayRequest.poste" id="poste" name="poste" aria-describedby="poste" placeholder="Entre le poste">
+                </div>
+                <div *ngIf="holidayForm.controls['posteEmploye'].invalid && (holidayForm.controls['posteEmploye'].dirty || holidayForm.controls['posteEmploye'].touched)" class="alert alert-danger">
+                  <div *ngIf="holidayForm.controls['posteEmploye'].errors">
+                      le poste est Obligatoire !
+                  </div>
+                </div>
+
+                
+                <button type="reset" class="btn btn-danger" style="float: right;width: 15%; margin-top: 15px; margin-right: 7px;">Annuler</button>
+
+                <button type="submit" class="btn btn-primary" style="float: right; margin-top: 15px;" (click)="doCreateRequest()">Envoyer la Demande   <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+              </form>
+              <!--
+              <ng-template #mymodal let-modal>
+                <div class="modal-header">
+                  <h4 class="modal-title" id="modal-basic-title">Bootstrap Modal</h4>
+                  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                    <span aria-hidden="true"> </span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  This is example from Codequs.com
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Ok</button>
+                </div>
+              </ng-template>
+            -->
+           </div>
+
+          <div *ngIf="!isCreateHolidayBarActive">
+              <div class="input-group" style="text-align: center; margin-top: 10px;">
+                <div class="form-outline" style="width: 95%;">
+                  <input type="search" id="form1" (keyup)="doSearch()" [(ngModel)]="searchValue" class="form-control" placeholder="rechercher un employe (entrer nom)"/>
+                </div>
+                <button type="button" class="btn btn-primary" disabled>
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+
+                <div class="btn btn-outline-dark" style="float: right;" (click)="refresh()">
+                  Actualiser la liste  <i class="fa fa-refresh" aria-hidden="true"></i>
+                </div>
+
+                <div class="text-center" *ngIf="congeSrv.listHolidayRequest.length == 0" >
+                  <div class="spinner-border text-primary" role="status">
+                    <span>Chargement...</span>
+                  </div>
+                </div>
+
+                <div *ngIf="searchValue.length > 0" style="margin-top: 10px;"> 
+                  <table class="table table-striped table-dark" style="margin-top: 15px;">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prenom</th>
+                        <th scope="col">Poste</th>
+                        <th scope="col">Date Depart</th>
+                        <th scope="col">Date Retour</th>
+                        <th scope="col">. . .</th>
+
+                      </tr>
+                    </thead>
+                    <tbody *ngFor="let employe of listSearchRslt; let index=index" >
+                      <tr>
+                        <th scope="row"> {{ index+1 }} </th>
+                        <td> {{employe.nom}}</td>
+                        <td> {{ employe.prenom }} </td>
+                        <td>
+                          <div *ngIf="(employe.poste | typeof ) !== 'undefined'; then poste else role" ></div>
+                            <ng-template #poste>
+                                <span> {{ employe.poste }} </span>
+                            </ng-template>
+
+                            <ng-template #role>
+                              <span> {{ employe.role }} </span>
+                            </ng-template>
+                        </td>
+                        <td>{{ employe.dateDepart }} </td>
+                        <td> {{ employe.dateRetour }} </td>
+                        <td style="float: right; width: 100%;" align="right">
+                            <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="deleteHolidays(employe.idConge, index, true)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+
+
+
+                <div *ngIf="searchValue.length == 0" style="margin-top: 10px;">
+                  <table class="table table-striped table-dark" style="margin-top: 15px;">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prenom</th>
+                        <th scope="col">Poste</th>
+                        <th scope="col">Date Depart</th>
+                        <th scope="col">Date Retour</th>
+                        <th scope="col">. . .</th>
+
+                      </tr>
+                    </thead>
+                    <tbody *ngFor="let employe of congeSrv.listHolidayRequest; let index=index" >
+                      <tr>
+                        <th scope="row"> {{ index+1 }} </th>
+                        <td> {{employe.nom}}</td>
+                        <td> {{ employe.prenom }} </td>
+                        <td>
+                          <div *ngIf="(employe.poste | typeof ) !== 'undefined'; then poste else role" ></div>
+                            <ng-template #poste>
+                                <span> {{ employe.poste }} </span>
+                            </ng-template>
+
+                            <ng-template #role>
+                              <span> {{ employe.role }} </span>
+                            </ng-template>
+                        </td>
+                        <td>{{ employe.dateDepart }} </td>
+                        <td> {{ employe.dateRetour }} </td>
+                        <td style="float: right; width: 100%;" align="right">
+                            <Button class="btn btn-danger " data-toggle="modal" data-target="#exampleModal" (click)="deleteHolidays(employe.idConge, index, false)">Supprimer <i class="fa fa-trash" aria-hidden="true"></i></Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+          </div>
+
+        </div>
+    </div>

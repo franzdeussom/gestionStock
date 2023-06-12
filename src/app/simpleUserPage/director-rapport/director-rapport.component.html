@@ -1,0 +1,67 @@
+<div class="contener">
+    <div class="home-content">
+        <div class="head">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                     <a class="nav-link active" #tabRapportVente>Rapport de vente</a>
+                </li>
+                <!--<li class="nav-item" (click)="changeToTabRapportApprov()">
+                     <a class="nav-link" #tabApprovisionement>Rapport d'approvisionement du Stock</a>
+                </+li>-->
+            </ul>
+        </div>
+
+        <div class="text-center" style="margin-top: 10px;">
+            <span  class="badge rounded-pill bg-primary">PRIX TOTAL DES VENTES DU JOUR => <span style="font-size: 15px; color:white;"> {{ gestionVenteSrv.prixTotalVentes_Jour }}</span> FCFA </span>
+            <span  class="badge bg-info text-dark"> GAIN TOTAL DU JOUR => <span style="font-size: 15px; color:white;">{{ gestionVenteSrv.prixGlobalVenteJourGain }} FCFA </span>  </span>    
+        </div>
+        
+        <button style="float:right; right: 0;" class="btn btn-outline-dark" (click)="refresh()">
+            Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+        </button>
+
+        <div class="text-center" *ngIf="gestionVenteSrv.listVenteJour.length == 0" >
+          <div class="spinner-border text-primary" role="status">
+            <span>Chargement...</span>
+          </div>
+        </div>
+
+        <div>
+            <table class="table table-striped table-dark" style="margin-top: 15px;">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Article</th>
+                    <th scope="col">Vendu Par</th>
+                    <th scope="col">Poste</th>
+                    <th scope="col">Qte</th>
+                    <th scope="col">Prix Unitaire</th>
+                    <th scope="col">Prix de Vente</th>
+                    <th scope="col">Montant Perçu</th>
+                    <th scope="col">Gain</th>
+                    <th scope="col"> Jour </th>
+                    <th scope="col"> Heure</th>
+    
+                  </tr>
+                </thead>
+                <tbody *ngFor="let vente of gestionVenteSrv.listVenteJour; let index=index" >
+                  <tr>
+                    <th scope="row"> {{ index+1 }} </th>
+                    <td  scope="row">{{ vente.nomType }}</td>
+                    <td  scope="row"> {{ vente.nomArticle }} </td>
+                    <td scope="row">{{ vente.nom }} {{ vente.prenom }} </td>
+                    <td scope="row">{{ vente.role }} </td>
+                    <td scope="row"> {{ vente.qteVendue }} </td>
+                    <td scope="row" style="color: crimson;"> {{ vente.prixUnitaire }} </td>
+                    <td scope="row" style="color: chocolate;">{{ vente.prixVente }} FCFA </td>
+                    <td scope="row" style="color:brown"> {{ vente.montantVente }} FCFA </td>
+                    <td  scope="row" style="color:greenyellow;">{{ vente.marge }} FCFA </td>
+                    <td  scope="row">{{ vente.dates }}  </td>
+                    <td scope="row">{{ vente.heure }}  </td>
+                  </tr>
+                </tbody>
+              </table> 
+        </div>
+    </div>
+</div>
