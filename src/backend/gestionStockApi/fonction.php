@@ -363,7 +363,7 @@ class Fonction
 
   function updateArticleQte($article): bool{
         $query = $this->_bd->prepare("UPDATE gestionStock.articles 
-                                      SET articles.qteCourrante = :qty,
+                                      SET articles.qteCourrante = (articles.qteCourrante + :qty),
                                           articles.coutTotal = :cout
 
                                         WHERE articles.idArticle = :id     
@@ -602,7 +602,7 @@ class Fonction
                                         FROM 
                                         gestionStock.users,
                                         gestionStock.sanction
-                                            WHERE users.idUser = sanction.id 
+                                            WHERE users.idUser = sanction.idUser 
                                             ORDER BY sanction.id DESC
                                             ");
         $query->execute();
@@ -649,7 +649,8 @@ class Fonction
     //perte ********************************
     
     function addPerte($perte): bool{
-        $query = $this->_bd->prepare("INSERT INTO 
+        if(!is_null($perte->idArticle)){
+          $query = $this->_bd->prepare("INSERT INTO 
                                                 gestionStock.perte(
                                                     motif,
                                                     prix,
@@ -663,15 +664,14 @@ class Fonction
                                                   :dates,
                                                   :idArticle)                                               
                                     ");
-        $query->execute([
+         $query->execute([
                 ':motif'=> $perte->motif,
                 ':prix'=> $perte->prix,
                 ':qte'=> $perte->qte,
                 ':dates'=> $perte->dates,
                 ':idArticle'=> $perte->idArticle
-        ]);
+         ]);
 
-        if(isset($perte->idArticle) && !empty($perte->idArticle)){
                 $otherUpdate = $this->_bd->prepare("UPDATE gestionStock.articles 
                                             SET articles.qteCourrante = (SELECT articles.qteCourrante FROM gestionStock.articles WHERE idArticle = :idArticle) - :qtePerdu
                                             WHERE articles.idArticle = :idArticle");
@@ -679,9 +679,36 @@ class Fonction
                     ':qtePerdu'=>$perte->qte,
                     ':idArticle'=>$perte->idArticle
                 ]);
-        }
+        
+         return ($query && $otherUpdate) ? true:false;
 
-        return ($query && $otherUpdate) ? true:false;
+        }else{
+                $query = $this->_bd->prepare("INSERT INTO 
+                                                gestionStock.perte(
+                                                    motif,
+                                                    prix,
+                                                    qte,
+                                                    dates,
+                                                    idArticle)
+                                             VALUES(
+                                                  :motif,
+                                                  :prix,
+                                                  :qte,
+                                                  :dates,
+                                                  :idArticle)                                               
+                                    ");
+                $query->execute([
+                        ':motif'=> $perte->motif,
+                        ':prix'=> $perte->prix,
+                        ':qte'=> $perte->qte,
+                        ':dates'=> $perte->dates,
+                        ':idArticle'=> $perte->idArticle
+                ]);
+
+             return $query ? true:false;
+        }
+    
+
     }
 
     function getAllPerte(): array{
@@ -692,21 +719,37 @@ class Fonction
                                             perte.prix,
                                             perte.dates,
                                             perte.idArticle,
-                                            articles.nomArticle,
-                                            (SELECT SUM(perte.prix) FROM gestionStock.perte) as 'SommePerdu'
-
+                                            articles.nomArticle
                                             FROM 
                                                 gestionStock.perte, gestionStock.articles
 
                                                 WHERE 
                                                     perte.id = perte.id
                                                     AND
-                                                    perte.idArticle = articles.idArticle
+                                                    (perte.idArticle = articles.idArticle OR perte.idArticle = null)
                                             ");
         $query->execute();
         $queryRslt = $query->fetchAll();
+        $tab = count($queryRslt) > 0 ? $queryRslt:[];
 
-        return count($queryRslt) > 0 ? $queryRslt:[];  
+        $subQuery = $this->_bd->prepare("SELECT
+                                                perte.id,
+                                                perte.motif,
+                                                perte.prix,
+                                                perte.dates
+                                                FROM 
+                                                gestionStock.perte where perte.qte IS NULL;
+                                            ");
+
+        $subQuery->execute();
+        $subQueryRslt = $subQuery->fetchAll();
+        $tabSub = count($subQueryRslt) > 0 ? $subQueryRslt:[];
+
+        $rslt = array();
+        array_push($rslt, $tab);
+        array_push($rslt, $tabSub);
+
+        return $rslt;  
     }
 
     //******************** */
@@ -843,10 +886,10 @@ class Fonction
 
             private function getSumPerte(): int{
                 $queryArticle = $this->_bd->prepare("SELECT 
-                                                    SUM(perte.qte * perte.prix) as 'perteArticle'
+                                                    IFNULL(SUM(perte.qte * perte.prix), 0) as perteArticle
                                                     FROM gestionStock.perte 
-                                                    WHERE perte.idArticle <> 'null' 
-                                "           );
+                                                    WHERE perte.idArticle IS NOT NULL 
+                                                   " );
                 $queryArticle->execute();
 
                 $rslt = $queryArticle->fetch(PDO::FETCH_ASSOC);
@@ -855,9 +898,9 @@ class Fonction
 
 
                 $queryDivers = $this->_bd->prepare("SELECT 
-                                                    SUM(emprunt.prixVente) as 'perteDivers'
+                                                    IFNULL(SUM(emprunt.prixVente), 0) as perteDivers
                                                     FROM gestionStock.emprunt 
-                                                        WHERE emprunt.statut = 'NON REGLE'; 
+                                                        WHERE emprunt.statut = 'NON REGLE' 
                                                 ");
                 $queryDivers->execute();
 
@@ -871,10 +914,10 @@ class Fonction
             private function getSumEmprunt(): int{
 
                 $query = $this->_bd->prepare("SELECT 
-                                                    SUM(emprunt.prixVente) as 'montantEmprunt'
+                                                    IFNULL(SUM(emprunt.prixVente),0) as montantEmprunt
                                                     FROM gestionStock.emprunt 
-                                                        WHERE emprunt.statut = 'NON REGLE'; 
-                                "           );
+                                                        WHERE emprunt.statut = 'NON REGLE' 
+                                            " );
                 $query->execute();
 
                 $rslt = $query->fetch(PDO::FETCH_ASSOC);
@@ -883,26 +926,38 @@ class Fonction
             }
 
             private function getSumGainVente(){
-                $query = $this->_bd->prepare("SELECT SUM(articlevendue.montantVente) as 'coutVente',
-                                                        SUM(articlevendue.marge) as 'gain'
+                $query = $this->_bd->prepare("SELECT iFNULL(SUM(articlevendue.montantVente), 0) as coutVente,
+                                                        IFNULL(SUM(articlevendue.marge), 0) as gain
                                                          FROM gestionStock.articlevendue 
-                   ");
+                                              ");
                 $query->execute();
+
+                 $queryEmpruntRegle = $this->_bd->prepare("SELECT 
+                                                    IFNULL(SUM(emprunt.prixVente),0) as empruntRegle
+                                                    FROM gestionStock.emprunt 
+                                                        WHERE emprunt.statut = 'REGLE' 
+                                                         ");
+                $queryEmpruntRegle->execute();
+                $rslt = $queryEmpruntRegle->fetch(PDO::FETCH_ASSOC);
+
+                $empruntRegle = (count($rslt) > 0 || is_numeric($rslt['empruntRegle'])) ? $rslt['empruntRegle'] : 0;
 
                 $rslt = $query->fetchAll();
                     if(count($rslt) > 0){
                         foreach($rslt as $i){
-                            $this->VenteTotal = isset($i['coutVente']) ? ((int) $i['coutVente']) : 0;
-                            $this->gain = isset($i['gain']) ? ((int) $i['gain']) : 0;
+                            $this->VenteTotal =(is_numeric($i['coutVente']) && !is_null($i['coutVente'])) ? ((int) $i['coutVente']) : 0;
+                            $this->gain = (is_numeric($i['gain']) && !is_null($i['gain'])) ? ((int) $i['gain']) : 0;
+
                         }
-                            
+
+                        $this->gain = $this->gain + $empruntRegle;
                     }
             }
 
 
             private function getCoutStock(): int {
                 $query = $this->_bd->prepare("SELECT 
-                                                SUM(articles.qteCourrante * type_article.prixUnitaire) as 'coutsStockActuel' 
+                                                IFNULL(SUM(articles.qteCourrante * type_article.prixUnitaire), 0) as 'coutsStockActuel' 
                                                 FROM gestionStock.articles, gestionStock.type_article
                                              WHERE articles.idRefType = type_article.id");
                 $query->execute();

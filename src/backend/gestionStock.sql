@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 11, 2023 at 11:40 PM
+-- Generation Time: Jun 12, 2023 at 04:41 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -42,9 +42,9 @@ CREATE TABLE `articles` (
 
 INSERT INTO `articles` (`idArticle`, `nomArticle`, `qteCourrante`, `coutTotal`, `idRefType`, `dateCreation`) VALUES
 (16, 'Orange', 770, 215500, 2, '06/06/2023'),
-(17, 'Booster', 2, 1000, 1, '06/06/2023'),
-(18, 'Pamplemous', 488, 137500, 2, '06/07/2023'),
-(19, 'KADJI', 248, 125000, 1, '06/07/2023');
+(17, 'Booster', 1, 2500, 1, '06/06/2023'),
+(18, 'Pamplemous', 486, 137500, 2, '06/07/2023'),
+(19, 'KADJI', 456, 125000, 1, '06/07/2023');
 
 -- --------------------------------------------------------
 
@@ -121,7 +121,6 @@ CREATE TABLE `conge` (
 --
 
 INSERT INTO `conge` (`idConge`, `idUser`, `id_employe`, `motif`, `date_dep`, `heure_dep`, `date_ret`, `heur_ret`, `statut`) VALUES
-(2, NULL, 12, 'Voyage', '2023-06-05', NULL, '2023-06-19', NULL, NULL),
 (3, 2, NULL, 'Voyage', '2023-06-05', NULL, '2023-06-19', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -222,7 +221,7 @@ CREATE TABLE `perte` (
   `id` int(10) UNSIGNED NOT NULL,
   `motif` text NOT NULL,
   `prix` float NOT NULL,
-  `qte` int(11) NOT NULL,
+  `qte` int(11) DEFAULT NULL,
   `dates` varchar(15) NOT NULL,
   `idArticle` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -232,7 +231,16 @@ CREATE TABLE `perte` (
 --
 
 INSERT INTO `perte` (`id`, `motif`, `prix`, `qte`, `dates`, `idArticle`) VALUES
-(1, 'CASSE', 500, 2, '9/6/2023', 16);
+(1, 'CASSE', 500, 2, '9/6/2023', 16),
+(2, 'casse', 500, 2, '12/6/2023', 18),
+(3, 'paye music', 2000, NULL, '12/06/2023', NULL),
+(4, 'paye', 650, NULL, '12/6/2023', NULL),
+(5, 'paye ...', 200, NULL, '12/6/2023', NULL),
+(6, 'casse', 1000, 2, '12/6/2023', 19),
+(8, 'passe', 250, NULL, '12/06/2023', NULL),
+(9, 'paye', 500, NULL, '12/06/2023', NULL),
+(10, 'paye employeMusic', 1500, NULL, '12/6/2023', NULL),
+(11, 'casse', 3000, 6, '12/6/2023', 17);
 
 -- --------------------------------------------------------
 
@@ -254,7 +262,7 @@ CREATE TABLE `sanction` (
 --
 
 INSERT INTO `sanction` (`id`, `idUser`, `id_employe`, `motif`, `amande`, `dates`) VALUES
-(1, NULL, 15, 'RETARD NON JUSTIFIE', 2500, '9/6/2023');
+(11, NULL, 15, 'SUSPENSION TEMPORAIRE', 650, '12/6/2023');
 
 -- --------------------------------------------------------
 
@@ -309,7 +317,8 @@ INSERT INTO `users` (`idUser`, `nom`, `prenom`, `email`, `tel`, `cni`, `mdp`, `r
 (8, 'Franz', 'Deussom', 'franz@gmail.com', 698403201, 'kitid300', 'mdps', 'developper', '', '2023/07/11'),
 (10, 'admin', 'kaleb', 'admin@gmail.com', 695258965, 'KITID5236', 'mdps', 'ADMINISTRATOR', '', '2023/07/11'),
 (11, 'caissiere', 'caisse', 'caissiere@gmail.com', 658523552, 'KIT2358', 'mdps', 'CASHIER', '', '2023/07/11'),
-(12, 'noname', 'nosurname', 'noname@gmail.com', 698025568, 'KITID546', 'j7KqGL6G4iFmwKg9DD', 'CASHIER', 'user directorUser', '2023/07/11');
+(12, 'noname', 'nosurname', 'noname@gmail.com', 698025568, 'KITID546', 'j7KqGL6G4iFmwKg9DD', 'CASHIER', 'user directorUser', '2023/07/11'),
+(15, 'Bruno', 'mars', 'bruno@gmail.com', 654223656, 'jsdss5s6dlslds', 'iyiT8LlYcfzOUnsXDF', 'MAGAZINIER', 'userdirectorUser', '2023/07/11');
 
 --
 -- Indexes for dumped tables
@@ -446,13 +455,13 @@ ALTER TABLE `fiche_pre_abs`
 -- AUTO_INCREMENT for table `perte`
 --
 ALTER TABLE `perte`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `sanction`
 --
 ALTER TABLE `sanction`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `type_article`
@@ -464,7 +473,7 @@ ALTER TABLE `type_article`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `idUser` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `idUser` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
