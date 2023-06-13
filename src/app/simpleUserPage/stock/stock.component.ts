@@ -25,7 +25,6 @@ export class StockComponent {
   listSearch: Article[] = []; 
   searchValue: string = '';
 
-  oldQty: number = 0;
   tmpArticleToUpdate: Article = new Article();
 
     constructor(public gestionArticleSrv: GestionArticleService,
@@ -139,7 +138,6 @@ export class StockComponent {
 
   openModal(content:any, article: Article){
       Object.assign(this.tmpArticleToUpdate, article);
-      this.oldQty = article.qteCourrante;
       this.createUpdateFormContorol();
       this.ngBmodal.open(content);
   }
@@ -158,7 +156,6 @@ export class StockComponent {
   doUpdate(){
       if(this.newUpdateFromControl.valid){
         const newQty = this.newUpdateFromControl.get('qty')?.value;
-        if(newQty > this.oldQty){
           if(newQty >= 0){
             this.tmpArticleToUpdate.qteCourrante = newQty;
             this.defineTotalPriceNewQty(this.tmpArticleToUpdate.idArticle);
@@ -167,12 +164,6 @@ export class StockComponent {
             this.gestionArticleSrv.activeAlertError("Veuillez entrer une quantite supperieur à 0");
             this.newUpdateFromControl.controls['qty'].setValue(undefined);
           }
-          }else{
-            this.gestionArticleSrv.activeAlertError("Vous ne posseder de droit de diminuer le stock");
-            this.newUpdateFromControl.controls['qty'].setValue(undefined);
-
-        }
-
       }else{
         this.gestionArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
       }
