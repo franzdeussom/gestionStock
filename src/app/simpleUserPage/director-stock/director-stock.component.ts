@@ -107,6 +107,7 @@ export class DirectorStockComponent {
     if(this.isDataTypeSet()){
       this.typeArticleSrv.createNewType(this.newTypeArticle);
       this.newtypeFormControl.reset();
+      this.createConrolForm();
     }else{
       this.typeArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
     }
@@ -151,6 +152,7 @@ export class DirectorStockComponent {
         if(this.tmpTypeToUpdate.qteCritique > 0 && this.tmpTypeToUpdate.prixUnitaire > 0){
            this.typeArticleSrv.updateType(this.tmpTypeToUpdate);
            this.updateFormControl.reset();
+           this.createUpdateFormControl();
         }else{
           this.updateFormControl.controls['qteCritique'].setValue(undefined);
           this.updateFormControl.controls['prixUnitaire'].setValue(undefined);
