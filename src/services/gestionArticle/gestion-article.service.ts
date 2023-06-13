@@ -221,7 +221,7 @@ export class GestionArticleService {
 
   async analyseStock(){
     const exec = (article: Article)=>{
-      return article.qteCourrante <= article.qteCritique || (article.qteCourrante - 15) <= article.qteCritique;
+      return article.qteCourrante <= article.qteCritique;
     }
     this.listArticleToSupply = Array.from(this.listArticle.filter(exec));
   }
