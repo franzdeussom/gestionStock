@@ -86,6 +86,7 @@ export class StockComponent {
       if(this.newArticle.qteCourrante > 0){
             this.defineTotalArticlePrice();
             this.gestionArticleSrv.doSupply(this.newArticle);
+            this.newArticleFormControl.reset();
         }else{
            this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
         }
@@ -160,6 +161,7 @@ export class StockComponent {
             this.tmpArticleToUpdate.qteCourrante = newQty;
             this.defineTotalPriceNewQty(this.tmpArticleToUpdate.idArticle);
             this.gestionArticleSrv.updateQty(this.tmpArticleToUpdate);  
+            this.newUpdateFromControl.reset()
           }else{
             this.gestionArticleSrv.activeAlertError("Veuillez entrer une quantite supperieur à 0");
             this.newUpdateFromControl.controls['qty'].setValue(undefined);
