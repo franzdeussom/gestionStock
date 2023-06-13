@@ -81,18 +81,26 @@ export class StockComponent {
   }
 
   addToTheStock(){
-
-    if(this.isDataSet()){
-      if(this.newArticle.qteCourrante > 0){
-            this.defineTotalArticlePrice();
-            this.gestionArticleSrv.doSupply(this.newArticle);
-            this.newArticleFormControl.reset();
-        }else{
-           this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
-        }
+      const articleExist =(nom: string)=>{
+          return this.gestionArticleSrv.listArticle.findIndex((article)=> article.nomArticle.toLowerCase() === nom.toLowerCase()) != -1;
+      }
+    if(!articleExist(this.newArticle.nomArticle)){
+      if(this.isDataSet()){
+        if(this.newArticle.qteCourrante > 0){
+              this.defineTotalArticlePrice();
+              this.gestionArticleSrv.doSupply(this.newArticle);
+              this.newArticleFormControl.reset();
+          }else{
+             this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
+          }
+      }else{
+          this.gestionArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
+      }
     }else{
-        this.gestionArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
+      this.gestionArticleSrv.activeAlertError('Cet article existe deja dans le stock !');
+      this.newArticleFormControl.controls['name'].setValue(undefined);
     }
+    
 
     this.gestionArticleSrv.close();
   }
