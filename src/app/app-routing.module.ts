@@ -1,3 +1,5 @@
+import { AdminPerteComponent } from './simpleUserPage/admin-perte/admin-perte.component';
+import { AdminSanctionComponent } from './simpleUserPage/admin-sanction/admin-sanction.component';
 import { DirectorListempruntComponent } from './simpleUserPage/director-listemprunt/director-listemprunt.component';
 import { AdminRapportStockComponent } from './simpleUserPage/admin-rapport-stock/admin-rapport-stock.component';
 import { DirectorPerteComponent } from './simpleUserPage/director-perte/director-perte.component';
@@ -67,6 +69,14 @@ const routes: Routes = [
   {
     path: 'admin/rapport/stats',
     component: AdminStatsComponent
+  },
+  {
+    path: 'admin/rapport/sanctions',
+    component: AdminSanctionComponent
+  },
+  {
+    path: 'admin/rapport/charges',
+    component: AdminPerteComponent  
   },
 
   //cashier routes****

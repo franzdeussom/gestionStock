@@ -260,7 +260,7 @@ export class GestionArticleService {
       setTimeout(() => {
           this.closeSuccessAlert();
           this.closeErrorAlert()
-      }, 2500);
+      }, 3800);
   }
 
   activeAlertSucess(message: string){

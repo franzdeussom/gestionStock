@@ -1,0 +1,76 @@
+<div class="contener">
+    <div class="home-content">
+        <div >
+            <button class="btn btn-outline-dark" (click)="refresh()">
+                Actualiser  <i class="fa fa-refresh" aria-hidden="true"></i> 
+            </button>
+        </div>
+
+        <div class="text-center" *ngIf="gestionChargeSrv.listCharge.length == 0" >
+            <div class="spinner-border text-primary" role="status">
+              <span>Chargement...</span>
+            </div>
+          </div>
+
+        <div style="margin-top: 10px; margin-bottom: 5px">
+            
+          <div class="card" *ngFor="let perte of gestionChargeSrv.listCharge" style="margin-top: 10px; margin-bottom: 5px">
+            <div class="card-header text-bg-dark mb-3">
+                    <span *ngIf="(perte.idArticle | typeof) !== 'undefined'" > Perte sur : Article </span>
+                    <span *ngIf="(perte.idArticle | typeof) === 'undefined'" > Perte sur autre divers... </span>
+            </div>
+            <div *ngIf="(perte.idArticle | typeof) !== 'undefined'; then articles else divers"></div>
+            
+            <ng-template #articles>
+                            
+
+                            <div class="mb-3">
+                                <label for="article" class="form-label">Nom de l'article :</label>
+                                <input type="text" [value]="perte.nomArticle" [disabled]="true" class="form-control" id="article" name="article"  aria-describedby="emailHelp">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="qte" class="form-label">Quantite :</label>
+                                <input type="number" class="form-control" [value]="perte.qte" [disabled]="true" id="qte" name="qte"  aria-describedby="emailHelp">
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label for="montant" class="form-label"> Montant :</label>
+                                <input type="number" class="form-control" [value]="perte.prix" [disabled]="true" id="montant" name="prix">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label"> Date :</label>
+                                <input type="text" class="form-control" [value]="perte.dates" [disabled]="true" id="exampleInputPassword1" name="date">
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1"   class="form-label">Explication (details) :</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" [value]="perte.motif" [disabled]="true" rows="3" name="motif"></textarea>
+                            </div>
+                    </ng-template>
+
+
+                    <ng-template #divers>
+                    
+                            <div class="mb-3">
+                                <label for="montant" class="form-label"> Montant :</label>
+                                <input type="number" class="form-control" [value]="perte.prix" [disabled]="true" id="montant" name="prix">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label"> Date :</label>
+                                <input type="text" class="form-control" [value]="perte.dates" [disabled]="true" id="exampleInputPassword1" name="date">
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Explication (details) :</label>
+                                <textarea class="form-control" [value]="perte.motif" [disabled]="true" id="exampleFormControlTextarea1" rows="3" name="motif"></textarea>
+                            </div>
+                    </ng-template>
+                    
+
+    </div>
+</div>

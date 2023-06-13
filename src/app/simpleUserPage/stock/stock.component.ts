@@ -84,13 +84,19 @@ export class StockComponent {
   addToTheStock(){
 
     if(this.isDataSet()){
-        this.gestionArticleSrv.doSupply(this.newArticle);
+      if(this.newArticle.qteCourrante > 0){
+            this.defineTotalArticlePrice();
+            this.gestionArticleSrv.doSupply(this.newArticle);
+        }else{
+           this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
+        }
     }else{
         this.gestionArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
     }
 
     this.gestionArticleSrv.close();
   }
+  
   isDataSet(): boolean{
     return this.newArticleFormControl.valid;
   }
@@ -115,15 +121,10 @@ export class StockComponent {
         this.newArticle.prixUnitaire = getUnitPrice(index);
         this.newArticle.nomType = data.nomType;
         this.newArticle.nomArticle = data.name;
+        this.newArticle.qteCourrante = data.qteCourrante;
         this.indexType = index;
       }
-      if(this.newArticle.qteCourrante > 0){
-         this.defineTotalArticlePrice();
-      }else{
-        this.gestionArticleSrv.activeAlertError("Veuillez entrer une quantite supperieur à 0");
-        this.newArticleFormControl.controls['qteCourrante'].setValue(undefined);
-
-      }
+     
       this.gestionArticleSrv.close();
   }
 

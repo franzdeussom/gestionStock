@@ -121,7 +121,7 @@
                     <form action="" [formGroup]="newtypeFormControl">
                         <div class="form-group">
                             <label for="name">Nom du Nouveau type :</label>
-                            <input type="text" required class="form-control" formControlName="name" [(ngModel)]="newTypeArticle.libelle" id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
+                            <input type="text" required class="form-control" formControlName="name"  id="name" aria-describedby="name" name="name" placeholder="Entrer le nom">
                         </div>
                         <div class="alert alert-danger" *ngIf="newtypeFormControl.controls['name'].invalid && (newtypeFormControl.controls['name'].dirty || newtypeFormControl.controls['name'].touched)">
                             <div *ngIf="newtypeFormControl.controls['name'].errors" >
@@ -131,7 +131,7 @@
 
                         <div class="form-group">
                             <label for="name">Quantite Critique :</label>
-                            <input type="number" required class="form-control" formControlName="qteCritique" [(ngModel)]="newTypeArticle.qteCritique" id="qteCritique" aria-describedby="qteCritique" name="qteCritique">
+                            <input type="number" required class="form-control" formControlName="qteCritique"  id="qteCritique" aria-describedby="qteCritique" name="qteCritique">
                         </div>
                         <div class="alert alert-danger" *ngIf="newtypeFormControl.controls['qteCritique'].invalid && (newtypeFormControl.controls['qteCritique'].dirty || newtypeFormControl.controls['qteCritique'].touched)" >
                             <div *ngIf="newtypeFormControl.controls['qteCritique'].errors">
@@ -141,7 +141,7 @@
 
                         <div class="form-group">
                             <label for="name">Prix unitaire :</label>
-                            <input type="number" required class="form-control" formControlName="prixUnitaire" [(ngModel)]="newTypeArticle.prixUnitaire" id="price" aria-describedby="name" name="prixUnitaire" placeholder="0">
+                            <input type="number" required class="form-control" formControlName="prixUnitaire"  id="price" aria-describedby="name" name="prixUnitaire" placeholder="0">
                         </div>
                         <div *ngIf="newtypeFormControl.controls['prixUnitaire'].invalid && (newtypeFormControl.controls['prixUnitaire'].dirty || newtypeFormControl.controls['prixUnitaire'].touched)">
                             <div class="alert alert-danger" *ngIf="newtypeFormControl.controls['prixUnitaire'].errors" >
@@ -151,7 +151,7 @@
 
                         <div class="form-group">
                             <label for="name">Date de Creation :</label>
-                            <input type="text" required class="form-control" formControlName="dateCreation" [(ngModel)]="newTypeArticle.dateCreation" id="date" aria-describedby="name" name="dateCreation">
+                            <input type="text" required class="form-control" formControlName="dateCreation"  id="date" aria-describedby="name" name="dateCreation">
                         </div>
                         <div class="alert alert-danger" *ngIf="newtypeFormControl.controls['dateCreation'].invalid && (newtypeFormControl.controls['dateCreation'].dirty || newtypeFormControl.controls['dateCreation'].touched)">
                             <div *ngIf="newtypeFormControl.controls['dateCreation'].errors" >

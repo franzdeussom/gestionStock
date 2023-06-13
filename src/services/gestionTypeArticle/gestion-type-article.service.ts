@@ -32,7 +32,6 @@ export class GestionTypeArticleService {
   }
 
   updateType(type: TypeArticle){
-      console.log('type to update', type);
       this.api.post(Endpoint.UPDATE_TYPE_ARTICLE, type).subscribe((resp)=>{
           if(Object.keys(resp).length > 0){
               this.updateOnList(type);

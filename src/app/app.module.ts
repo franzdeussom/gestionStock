@@ -31,6 +31,8 @@ import { DirectorPerteComponent } from './simpleUserPage/director-perte/director
 import { AdminStatsComponent } from './simpleUserPage/admin-stats/admin-stats.component';
 import { DirectorListempruntComponent } from './simpleUserPage/director-listemprunt/director-listemprunt.component';
 import { NgChartsModule } from 'ng2-charts';
+import { AdminSanctionComponent } from './simpleUserPage/admin-sanction/admin-sanction.component';
+import { AdminPerteComponent } from './simpleUserPage/admin-perte/admin-perte.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { NgChartsModule } from 'ng2-charts';
     DirectorSanctionComponent,
     DirectorPerteComponent,
     AdminStatsComponent,
-    DirectorListempruntComponent
+    DirectorListempruntComponent,
+    AdminSanctionComponent,
+    AdminPerteComponent
 
   ],
   imports: [

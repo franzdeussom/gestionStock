@@ -193,7 +193,7 @@ export class CashierCreateCommandComponent implements OnInit{
       this.newVente.marge = this.newVente.totalAPayer - (this.newVente.qteVendue * this.listFilterByType[this.indexArticle].prixUnitaire); 
     }
     const isPriceVenteCorrect = ()=>{
-      return this.newVente.prixVente >= this.listFilterByType[this.indexArticle].prixUnitaire && this.newVente.prixVente >= 0;
+      return this.newVente.prixVente >= this.listFilterByType[this.indexArticle].prixUnitaire;
     }
       if(this.isEntryValid()){
           if(isPriceVenteCorrect()){
@@ -202,6 +202,7 @@ export class CashierCreateCommandComponent implements OnInit{
              this.articleSrv.doVente(this.newVente);
             this.getListFilterByType();
             this.formCommandControl.reset();
+            this.createControlCommadForm();
           }else{
             this.formCommandControl.controls['prixVente'].setValue(undefined);
 
@@ -241,6 +242,7 @@ checkUser(){
     const idArticle = Number.parseInt(this.formEmpruntControl.get('name')?.value);
     const qtyRequested = this.formEmpruntControl.get('quantite')?.value
     const index = this.listFilterByType.findIndex((article=> article.idArticle == idArticle));
+    
     if(index != -1){
       this.indexArticleEmprunt = index;
       if(qtyRequested > this.listFilterByType[index].qteCourrante){
@@ -249,8 +251,7 @@ checkUser(){
 
       }else if(this.listFilterByType[index].qteCourrante == 0){
         this.articleSrv.activeAlertError('Cette article est epuise en stock');
-        this.articleSrv.close();
-        this.formCommandControl.controls['quantite'].setValue(undefined);
+        this.formEmpruntControl.controls['quantite'].setValue(undefined);
       
       }else{
         if(qtyRequested >= 0){
@@ -260,6 +261,7 @@ checkUser(){
           this.getTotalPriceEmprunt();
         }else{
               this.articleSrv.activeAlertError('Veuillez entrer une quantite supperieur à 0!');
+              this.formEmpruntControl.controls['quantite'].setValue(undefined);
           }
          
       }
@@ -280,7 +282,9 @@ checkUser(){
             this.newEmprunt.prixVente = prixVente;
           }else{
               this.articleSrv.activeAlertError('Veuillez entrer une quantite supperieur à 0!');
-          }
+              this.formEmpruntControl.controls['quantite'].setValue(undefined);
+
+            }
           
         }   
       }
@@ -290,7 +294,7 @@ checkUser(){
 
   saveEmprunt(){
     const isPriceVenteCorrect = ()=>{
-      return this.newEmprunt.prixVente >= this.listFilterByType[this.indexArticleEmprunt].prixUnitaire && this.newVente.prixVente >= 0;
+      return this.newEmprunt.prixVente >= this.listFilterByType[this.indexArticleEmprunt].prixUnitaire;
     }
       if(this.isEntryEmpruntValid()){
         if(isPriceVenteCorrect()){
@@ -299,10 +303,10 @@ checkUser(){
           this.articleSrv.doEmprunt(this.newEmprunt);
           this.getListFilterByTypeEmprunt();
           this.formEmpruntControl.reset();
+          this.createControlEmpruntForm();
         }else{
           this.formEmpruntControl.controls['prixVente'].setValue(undefined);
           this.articleSrv.activeAlertError('Vous ne pouvez pas vendre ce produits moins que son prix unitaire.');
-          this.articleSrv.close();
         }   
       }else{
         this.articleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);

@@ -60,6 +60,10 @@ export class DirectorStockComponent {
           prixUnitaire: ['', Validators.required],
           dateCreation: ['', Validators.required]
     });
+    this.buildDateDay();
+    this.newtypeFormControl.valueChanges.subscribe((data)=>{
+        this.setParamNewArticle(data);
+    })
   }
 
   createUpdateFormControl(){
@@ -69,10 +73,11 @@ export class DirectorStockComponent {
       prixUnitaire: ['', Validators.required],
       dateCreation: ['', Validators.required]
     });
+    this.updateFormControl.controls['dateCreation'].setValue(this.dateSystSrv.getFormatDatePremium());
   }
 
   buildDateDay(){
-      this.newTypeArticle.dateCreation = this.dateSystSrv.getFormatDatePremium();
+      this.newtypeFormControl.controls['dateCreation'].setValue(this.dateSystSrv.getFormatDatePremium());
   }
 
   changeToAllArticle(){
@@ -97,13 +102,32 @@ export class DirectorStockComponent {
   }
 
   doCreationTypeArticle(){
+    this.checkingForm();
 
     if(this.isDataTypeSet()){
       this.typeArticleSrv.createNewType(this.newTypeArticle);
+      this.newtypeFormControl.reset();
     }else{
       this.typeArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
     }
     this.typeArticleSrv.close();
+  }
+
+  setParamNewArticle(data: any){
+    this.newTypeArticle.dateCreation = data.dateCreation;
+    this.newTypeArticle.libelle = data.name;
+    this.newTypeArticle.prixUnitaire = data.prixUnitaire;
+    this.newTypeArticle.qteCritique = data.qteCritique;
+  }
+  
+  checkingForm(){
+    if(this.newTypeArticle.prixUnitaire < 0){
+      this.newtypeFormControl.controls['prixUnitaire'].setValue(undefined);
+    }
+
+    if(this.newTypeArticle.qteCritique <= 0){
+      this.newtypeFormControl.controls['qteCritique'].setValue(undefined);
+    }
   }
 
   isDataTypeSet(): boolean{
@@ -115,7 +139,6 @@ export class DirectorStockComponent {
           this.isListOfArticleShow = true;
           if(this.typeArticleSrv.listTypeOfArticle.length == 0){
               this.typeArticleSrv.getAllType();
-              console.log('is tab vide');
           }
       }else{
         this.isListOfArticleShow = false;
@@ -123,8 +146,16 @@ export class DirectorStockComponent {
   }
 
   doUpdate(){
+
       if(this.isDataUpdateSet()){
-        this.typeArticleSrv.updateType(this.tmpTypeToUpdate);
+        if(this.tmpTypeToUpdate.qteCritique > 0 && this.tmpTypeToUpdate.prixUnitaire > 0){
+           this.typeArticleSrv.updateType(this.tmpTypeToUpdate);
+           this.updateFormControl.reset();
+        }else{
+          this.updateFormControl.controls['qteCritique'].setValue(undefined);
+          this.updateFormControl.controls['prixUnitaire'].setValue(undefined);
+          this.typeArticleSrv.activeAlertError('Nombre negatif pas pris en charge !');
+        }
       }else{
         this.typeArticleSrv.activeAlertError(AlertMessage.EMPTY_FIELD);
       }
