@@ -726,7 +726,8 @@ class Fonction
                                                 WHERE 
                                                     perte.id = perte.id
                                                     AND
-                                                    (perte.idArticle = articles.idArticle OR perte.idArticle = null)
+                                                    (perte.idArticle = articles.idArticle OR perte.idArticle IS NOT null)
+                                                    ORDER BY perte.id DESC
                                             ");
         $query->execute();
         $queryRslt = $query->fetchAll();
@@ -739,6 +740,7 @@ class Fonction
                                                 perte.dates
                                                 FROM 
                                                 gestionStock.perte where perte.qte IS NULL;
+                                                ORDER BY perte.id DESC
                                             ");
 
         $subQuery->execute();
@@ -898,9 +900,9 @@ class Fonction
 
 
                 $queryDivers = $this->_bd->prepare("SELECT 
-                                                    IFNULL(SUM(emprunt.prixVente), 0) as perteDivers
-                                                    FROM gestionStock.emprunt 
-                                                        WHERE emprunt.statut = 'NON REGLE' 
+                                                    IFNULL(SUM(perte.prix), 0) as perteDivers
+                                                    FROM gestionStock.perte
+                                                        WHERE perte.idArticle IS NULL 
                                                 ");
                 $queryDivers->execute();
 
@@ -914,7 +916,7 @@ class Fonction
             private function getSumEmprunt(): int{
 
                 $query = $this->_bd->prepare("SELECT 
-                                                    IFNULL(SUM(emprunt.prixVente),0) as montantEmprunt
+                                                    IFNULL(SUM(emprunt.netAPayer),0) as montantEmprunt
                                                     FROM gestionStock.emprunt 
                                                         WHERE emprunt.statut = 'NON REGLE' 
                                             " );
