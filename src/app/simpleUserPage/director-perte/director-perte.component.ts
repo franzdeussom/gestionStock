@@ -24,6 +24,7 @@ export class DirectorPerteComponent {
 
   isArticle: boolean = false;
   indexArticle: number = 0;
+
   constructor(
             public typeArticleSrv: GestionTypeArticleService,
             public articleSrv: GestionArticleService,
@@ -115,7 +116,7 @@ export class DirectorPerteComponent {
                 this.formControlOnIdSet.controls['qte'].setValue(undefined);
               }
             }else{
-                this.gestionChargeSrv.activeAlertError('il se pourrait que la quantite presente dans votre stock soit inférieur que votre demande !');
+                this.gestionChargeSrv.activeAlertError('il se pourrait que la quantite presente dans votre stock soit inférieur à votre demande !');
                 this.formControlOnIdSet.controls['qte'].setValue(undefined);
             }
           }

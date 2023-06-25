@@ -21,6 +21,7 @@ export class GestionStatsService {
   showAlertSucess: boolean = false;
   showAlertError: boolean = false;
   alert: Alert = new Alert();
+
   constructor(private api: ApiSystemeService, private checkUser: CheckUserService) { }
 
   loadStats(){
@@ -41,12 +42,12 @@ export class GestionStatsService {
     this.salesData = {
       labels: [' REPRESENTATION (FCFA)'],
       datasets: [
-            {label: 'Cout du Stock Actuelle', data: [this.stats.coutsStockActuel] },
+            {label: 'Cout du Stock Actuel', data: [this.stats.coutsStockActuel] },
             {label: 'Sommes des Ventes', data: [this.stats.coutVente] },
             {label: 'Cout des Charges', data: [this.stats.coutCharge] },
             {label: 'Montant des Emprunts', data: [this.stats.montantEmprunt] },
-            {label: 'Revenue Global(emprunt - charge)', data: [((this.stats.gain - this.stats.montantEmprunt)-this.stats.coutCharge)] }
-       ],
+            {label: 'Revenue Exact (Revenue exact - (emprunt + charge))', data: [((this.stats.gain - this.stats.montantEmprunt)-this.stats.coutCharge)] }
+       ]
     };
   
     this.chartOptions = {

@@ -15,7 +15,7 @@
 
           <div *ngIf="gestionStat.isStatsLoad" class="float:right; right: 0;">
               <button (click)="click()" class="btn btn-primary">
-                  <span *ngIf="showDetails" >Cacher les Details <i class="fa fa-eye-slash" aria-hidden="true"></i> </span>
+                  <span *ngIf="showDetails" >Masquer les Details <i class="fa fa-eye-slash" aria-hidden="true"></i> </span>
                   <span *ngIf="!showDetails" >Afficher les Details <i class="fa fa-eye" aria-hidden="true"></i></span>
               </button>
           </div>
@@ -24,12 +24,12 @@
             <table class="table" class="table table-striped table-dark">
                 <thead class="thead-dark">
                   <tr>
-                    <th scope="col">Cout du Stock Actuelle</th>
+                    <th scope="col">Cout du Stock Actuel</th>
                     <th scope="col"> Sommes des Ventes </th>
                     <th scope="col">Cout des Charges</th>
                     <th scope="col">Montant des Emprunts</th>
                     <th scope="col">Revenue Global</th>
-                    <th scope="col">Revenue Global(emprunt - charge)</th>
+                    <th scope="col">Revenue Exact ( Revenue Global - (cout des Charge + montant des emprunts))</th>
                   </tr>
                 </thead>
                 <tbody>

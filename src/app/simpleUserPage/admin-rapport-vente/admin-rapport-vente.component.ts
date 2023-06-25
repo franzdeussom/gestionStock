@@ -32,6 +32,7 @@ export class AdminRapportVenteComponent {
           throw new Error();
       }
   }
+  
   doFilter(){
    this.ListRsltSearchRapportVente = this.gestionVenteSrv.doSearch(this.filterValue);
     this.generatePriceFilter();
